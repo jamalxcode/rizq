@@ -1,3 +1,9 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A Brogue-inspired roguelike set in modern Kuwait. Reach 100,000 KD net worth, then make it home.">
 <title>Rizq</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -109,7 +115,8 @@ canvas{display:block;touch-action:manipulation;cursor:crosshair}
 .end-stats b{display:block;font:600 17px var(--mono);color:var(--fg);text-transform:none;letter-spacing:0;margin-top:2px;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
 </style>
-
+</head>
+<body>
 <div id="app">
   <header class="top">
     <div class="brand"><span class="ar">رزق</span><span class="en">RIZQ</span></div>
@@ -1549,3 +1556,5 @@ try{window.claude?.hot?.snapshot?.(()=>(G&&!G.over?{save:serialize()}:{}));}catc
 document.fonts&&document.fonts.ready.then(()=>render());
 window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
 </script>
+</body>
+</html>

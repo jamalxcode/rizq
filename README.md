@@ -2,7 +2,9 @@
 
 A Brogue-inspired roguelike set in modern Kuwait. You're young and ambitious, with a big dream. Head out from the Friday market through Shuwaikh's scrapyards, the Wafra farms and the winter camps into the deep desert. Reach **100,000 KD** net worth, then make it back through your front door.
 
-The whole game is one HTML file. Open `rizq.html` in a browser and play.
+**Play it at [rizq.sala.company](https://rizq.sala.company).**
+
+The whole game is one HTML file. To play offline, open `index.html` in a browser.
 
 ## Features
 
