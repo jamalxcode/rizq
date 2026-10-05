@@ -9,7 +9,8 @@
 <title>Rizq</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Reem+Kufi:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Reem+Kufi:wght@500;700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Reem+Kufi:wght@500;700&display=swap"></noscript>
 <style>
 /* Layout: one-screen game console. Header meters, a Sadu weave band, sidebar + map, touch pad on phones. */
 :root{
@@ -1555,8 +1556,10 @@ function boot(data){
  resize();
 }
 try{window.claude?.hot?.snapshot?.(()=>(G&&!G.over?{save:serialize()}:{}));}catch(e){}
-document.fonts&&document.fonts.ready.then(()=>render());
-window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});
+if(document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',()=>render());
+// Start only after the title screen has painted, so a slow device never sees a blank, frozen page.
+const startBoot=()=>{window.claude?.hot?.ready?window.claude.hot.ready(boot):boot(window.claude?.hot?.data??{});};
+requestAnimationFrame(()=>setTimeout(startBoot,0));
 </script>
 </body>
 </html>

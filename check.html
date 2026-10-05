@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Rizq check</title>
+<style>
+body{margin:0;padding:24px 16px;background:#14100d;color:#efe6d4;font:16px/1.5 system-ui,sans-serif}
+h1{color:#dcaa4f;font-size:22px;margin:0 0 12px}
+li{margin:4px 0} .ok{color:#8cc472} .bad{color:#e8675a}
+a{color:#dcaa4f}
+</style>
+</head>
+<body>
+<h1>Rizq device check</h1>
+<p>If you can read this, the page loaded. Results:</p>
+<ul id="out"><li>Running checks…</li></ul>
+<p><a href="/">Back to the game</a></p>
+<script>
+var out=document.getElementById('out'),rows=[];
+function add(name,ok,info){rows.push('<li class="'+(ok?'ok':'bad')+'">'+(ok?'✓ ':'✗ ')+name+(info?' — '+info:'')+'</li>');out.innerHTML=rows.join('');}
+setTimeout(function(){
+  add('Screen',true,innerWidth+'×'+innerHeight+' @'+(devicePixelRatio||1)+'x');
+  add('Browser',true,navigator.userAgent);
+  try{localStorage.setItem('rizq-check','1');localStorage.removeItem('rizq-check');add('Saving games',true);}catch(e){add('Saving games',false,e.message);}
+  try{var c=document.createElement('canvas').getContext('2d');add('Canvas',!!c);}catch(e){add('Canvas',false,e.message);}
+  try{new Function('var a={b:1};return a?.b??2')();add('Modern JavaScript',true);}catch(e){add('Modern JavaScript',false,'browser too old: '+e.message);}
+  var t=Date.now(),f=new Image(),done=false;
+  setTimeout(function(){if(!done){done=true;add('Google Fonts reachable',false,'no answer after 5 s');}},5000);
+  fetch('https://fonts.googleapis.com/css2?family=Reem+Kufi&display=swap',{mode:'no-cors'}).then(function(){if(!done){done=true;add('Google Fonts reachable',true,(Date.now()-t)+' ms');}}).catch(function(e){if(!done){done=true;add('Google Fonts reachable',false,e.message);}});
+},50);
+</script>
+</body>
+</html>
