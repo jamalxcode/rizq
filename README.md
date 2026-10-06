@@ -28,9 +28,9 @@ You're young, ambitious and ready to build something. Your uncle keeps sending v
 On depths 2, 5, 9, 12, 16, 20 and 24 a trader waits by the way back: Bu Fahad's diwaniya, Abu Salem's garage, a tea stand, the Wafra farm market, a winter camp, a majlis, and a Bedouin trader. Walk into them to:
 
 - **Buy** water, dates, dog treats, firecrackers, training courses, ma'amoul, and a few pieces of gear.
-- **Sell animals.** Each trader wants one kind today and pays 50% extra for it.
+- **Sell animals** for 80% of their worth, or 130% for the kind the trader wants today. Each trader takes at most three.
 - **Bank your cash.** Savings count toward your net worth and crows can't steal them.
-- **Ride home** in a pickup truck for a fee. You and every animal with you go straight to your front door.
+- **Call a pickup truck home.** It costs 8% of your net worth and takes 15–25 turns to arrive, so you have to survive until it comes, and stay on that depth. You and every animal with you go straight to your front door.
 - **Give ma'amoul** for 20% off everything, and they'll tell you what one unknown item is.
 
 ## How it plays
@@ -78,34 +78,64 @@ You can also click or tap to walk anywhere you've seen, and hover over anything 
 
 ## Run it locally
 
-The whole game is one self-contained file with no build step and no dependencies. Clone the repo and open `index.html` in a browser:
+The game is plain HTML, CSS and JavaScript with no build step. Clone the repo and serve the folder (opening `index.html` straight from disk also works in most browsers):
 
 ```bash
 git clone https://github.com/jamalxcode/rizq.git
 ```
+
+```bash
+npm run dev
+```
+
+Then open http://localhost:4174.
 
 You can enter a seed on the title screen to replay the same dungeon or share it with a friend.
 
 ## Project layout
 
 ```
-index.html   the entire game: HTML, CSS and JavaScript
-tests.html   automated checks and balance runs against the real game
-check.html   a bare device check for troubleshooting phones and browsers
-CNAME        custom domain for GitHub Pages (rizq.sala.company)
-README.md    this file
+index.html            page markup and styles; loads the scripts below in order
+app/data.js           constants and data tables: tiles, zones, animals, traders, items, runes
+app/mapgen.js         level generation for each zone, stairs, deal rooms, populating depths
+app/world.js          current-level helpers, messages, visual and sound feedback, field of view
+app/game.js           starting a run, changing depth, the bag, player actions, items, the turn engine
+app/ai.js             animal behavior, auto-explore, travel and resting
+app/save.js           saving and loading
+app/render.js         drawing the map
+app/ui.js             sidebar, inspect text, bag, trader, end screen
+app/input.js          keyboard, mouse and touch input; title screen; boot
+tests.html            in-browser checks and balance runs against the real game
+tests/e2e/            Playwright tests that run in CI
+tests/serve.mjs       local static server (npm run dev)
+check.html            a bare device check for troubleshooting phones and browsers
+CNAME                 custom domain (rizq.sala.company)
 ```
 
-The site is deployed with GitHub Pages from the `main` branch, so a push to `main` updates the live game.
+The scripts are classic (not modules) and share one global scope, so they must load in the order listed in `index.html`.
 
-## Testing
+## Testing and deploys
 
-Open [`tests.html`](https://rizq.sala.company/tests.html) (or serve the folder locally and open it there):
+Every push runs the browser tests in GitHub Actions (`.github/workflows/deploy.yml`). A push to `main` deploys to rizq.sala.company **only if the tests pass**, so a broken change can't reach the live game.
 
-- **Run checks** generates all 26 depths for several seeds and verifies that every level is fully connected, with no staircase cutting off part of a map and a trader on every hub depth. It also exercises taming with dates, the trader (buying, selling, banking, ma'amoul, the ride home), the herd's stay/follow rule, save/load, and loading old saves.
-- **Run balance** lets a bot play full games without cheats and reports how deep it got, its net worth and what ended the run. Use it after changing numbers. As of this version a simple bot reaches roughly depth 19–22 and about 75,000–104,000 KD, and wins some of the time.
+To run them locally:
 
-Run the checks before pushing to `main`.
+```bash
+npm install
+```
+
+```bash
+npx playwright install chromium
+```
+
+```bash
+npm test
+```
+
+You can also open [`tests.html`](https://rizq.sala.company/tests.html) in a browser:
+
+- **Run checks** generates all 26 depths for several seeds and verifies that every level is fully connected, with no staircase cutting off part of a map and a trader on every hub depth. It also exercises taming with dates, the trader (buying, selling at the right rates, the three-animal limit, banking, ma'amoul, the delayed truck and losing it if you leave), the herd's stay/follow rule, save/load, and loading old saves.
+- **Run balance** lets a bot play full games without cheats and reports how deep it got, its net worth and what ended the run. Use it after changing numbers. As of this version a simple bot reaches depths 20–22 with about 90,000–100,000 KD. Reaching 100,000 plus the truck fee takes careful play.
 
 ## Credits
 

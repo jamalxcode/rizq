@@ -49,17 +49,27 @@ const CHECKS={
   const q=()=>(P.inv.find(i=>i.k==='dates')||{q:0}).q;
   const a=place('sheep');playerMove(a.x-P.x,a.y-P.y);if(a.state!=='herd'||q()!==2)e.push('sheep not tamed with 1 handful');
   const b=place('camel');playerMove(b.x-P.x,b.y-P.y);if(b.state!=='herd'||q()!==0)e.push('camel not tamed with 2 handfuls');
-  if(netWorth()!==3150)e.push('net worth with herd should be 3150, got '+netWorth());return e;})()`,
+  if(netWorth()!==1620)e.push('net worth with herd should be 1620, got '+netWorth());return e;})()`,
  'Trader: buy, sell, bank, gift, ride home':`(()=>{SIM=true;newGame(4242);const e=[];
-  const s=nearFree(L,idx(P.x,P.y),1,new Set())[0];const c=makeMon('camel',s%W,(s/W)|0,1);c.state='herd';L.mons.push(c);
+  const place=k=>{const s=nearFree(L,idx(P.x,P.y),1,new Set(L.mons.map(m=>idx(m.x,m.y))))[0];const c=makeMon(k,s%W,(s/W)|0,1);c.state='herd';L.mons.push(c);return c;};
+  const c=place('camel');const g=place('goat');
   changeLevel(1);const tr=L.mons.find(m=>m.k==='trader');if(!tr)return['no trader on depth 2'];
-  P.dinars=5000;openShop(tr);const click=a=>{const b=document.querySelector('#shopBody button[data-act="'+a+'"]');if(!b||b.disabled)e.push('button '+a+' unavailable');else b.click();};
+  P.dinars=5000;openShop(tr);tr.req='sheep';drawShop();const click=a=>{const b=document.querySelector('#shopBody button[data-act="'+a+'"]');if(!b||b.disabled)e.push('button '+a+' unavailable');else b.click();};
   click('sup:water');if(!P.inv.some(i=>i.k==='water'&&i.q>=3))e.push('water not bought');
+  const before=P.dinars;click('sell:'+g.id);if(P.dinars-before!==80)e.push('goat should sell for 80% (80 KD), got '+(P.dinars-before));
   click('dep');if(G.bank<=0||P.dinars!==0)e.push('deposit failed');
   click('wd');if(G.bank!==0)e.push('withdraw failed');
   addInv(Object.assign(makeItem('maamoul'),{q:1}));drawShop();click('gift');if(!tr.gift)e.push('gift not applied');
-  click('ride');if(G.depth!==1)e.push('ride home failed');if(!L.mons.some(m=>m.k==='camel'&&m.state==='herd'))e.push('camel did not ride home');
+  click('ride');if(!G.ride)e.push('truck not called');if(G.depth!==2)e.push('ride should not be instant');
+  for(let i=0;i<40&&G.depth!==1;i++)rest();
+  if(G.depth!==1)e.push('truck never arrived');if(!L.mons.some(m=>m.k==='camel'&&m.state==='herd'))e.push('camel did not ride home');
   return e;})()`,
+ 'Leaving before the truck arrives forfeits the ride':`(()=>{SIM=true;newGame(4242);const e=[];changeLevel(1);G.ride={depth:2,left:10};changeLevel(1);
+  if(G.ride)e.push('ride still pending after leaving the depth');return e;})()`,
+ 'Each trader buys at most three animals':`(()=>{SIM=true;newGame(4242);const e=[];changeLevel(1);const tr=L.mons.find(m=>m.k==='trader');
+  for(let i=0;i<5;i++){const s=nearFree(L,idx(P.x,P.y),2,new Set(L.mons.map(m=>idx(m.x,m.y))))[0];const c=makeMon('sheep',s%W,(s/W)|0,2);c.state='herd';L.mons.push(c);}
+  openShop(tr);let sold=0;for(let i=0;i<5;i++){const b=[...document.querySelectorAll('#shopBody button[data-act^="sell:"]')].find(b=>!b.disabled);if(b){b.click();sold++;}}
+  closeShop();return sold===3?[]:['sold '+sold+' animals, expected 3'];})()`,
  'Herd that stays behind does not count':`(()=>{SIM=true;newGame(4242);const e=[];
   const s=nearFree(L,idx(P.x,P.y),1,new Set())[0];const c=makeMon('camel',s%W,(s/W)|0,1);c.state='herd';L.mons.push(c);
   toggleHerd();changeLevel(1);if(L.mons.some(m=>m.state==='herd'))e.push('herd followed while told to stay');
@@ -93,12 +103,14 @@ const BOT=`window.__bot=function(seed,maxSteps){
   if(P.hp<P.maxHp*.4){const ch=has('chai');if(ch&&!ch.cd){useCharm(ch);continue;}
    if(th.length){const dr=P.inv.find(i=>IT[i.k].cat==='drink'&&(!G.known[i.k]||['juice','laban'].includes(i.k)));if(dr){useItem(dr);continue;}}}
   const adj=L.mons.find(m=>isHostile(m)&&adjacentP(m));if(adj){playerMove(adj.x-P.x,adj.y-P.y);continue;}
+  if(G.ride){rest();continue;}   // truck is coming: stay put
   if(th.length||P.hp<P.maxHp*.7){rest();continue;}
   const lv=L.mons.find(m=>m.state==='neutral'&&MT[m.k].kind==='livestock'&&cheb(m.x,m.y,P.x,P.y)===1&&!diagBlocked(P.x,P.y,m.x,m.y)&&dq()>=(MT[m.k].feed||1)+1);
   if(lv){playerMove(lv.x-P.x,lv.y-P.y);continue;}
   const tr=L.mons.find(m=>m.k==='trader'&&cheb(m.x,m.y,P.x,P.y)<=2);
-  if(tr&&(P.dinars>0||sellable().length)){for(const a of sellable()){P.dinars+=MT[a.k].value;L.mons=L.mons.filter(o=>o!==a);}
-   if(netWorth()>=100000+rideFee()&&G.depth>1){P.dinars+=G.bank;G.bank=0;P.dinars-=rideFee();goToLevel(1,'home',-1);continue;}
+  if(tr&&!G.ride&&(P.dinars>0||(netWorth()>=100000*1.1&&G.depth>1))){
+   // Keep the herd (it counts while it walks with you); bank the cash; call the truck once the target survives the fee.
+   if(netWorth()*0.92>=100000&&G.depth>1){P.dinars+=G.bank;G.bank=0;const fee=rideFee();P.dinars-=fee;G.ride={depth:G.depth,left:ri(15,25)};}
    G.bank+=P.dinars;P.dinars=0;}
   if(netWorth()>=100000){const g=L.up;if(cheb(g[0],g[1],P.x,P.y)===1&&!diagBlocked(P.x,P.y,g[0],g[1])){playerMove(g[0]-P.x,g[1]-P.y);continue;}
    auto={type:'travel',goal:g,seen:new Set(),n:0};const ok=travelStep();auto=null;if(!ok)rest();continue;}
@@ -117,9 +129,9 @@ async function runChecks(){
  log(fails?`${fails} check(s) failed.`:'All checks passed.',fails?'bad':'ok');
  return fails;
 }
-async function runBalance(n=12){
+async function runBalance(n=12,steps=40000){
  await ready;out.textContent='';run(BOT);const res=[];
- for(let s=1;s<=n;s++){await pause();const r=run(`__bot(${9000+s},40000)`);res.push(r);
+ for(let s=1;s<=n;s++){await pause();const r=run(`__bot(${9000+s},${steps})`);res.push(r);
   log(`seed ${r.seed}: ${r.won?'WON':'ended'} · deepest ${r.deepest} · ${r.turn} turns · net worth ${r.net.toLocaleString()} KD · max energy ${r.maxHp} · ${r.cause}${r.err?' · ERROR '+r.err:''}`,r.err?'bad':r.won?'ok':'');}
  const med=a=>{const s=[...a].sort((x,y)=>x-y);return s[s.length>>1];};
  log(`Median deepest ${med(res.map(r=>r.deepest))} · median net worth ${med(res.map(r=>r.net)).toLocaleString()} KD · wins ${res.filter(r=>r.won).length}/${n}`,'dim');
