@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Rizq tests</title>
+<style>
+body{margin:0;padding:24px 16px;background:#14100d;color:#efe6d4;font:14px/1.5 system-ui,sans-serif}
+h1{color:#dcaa4f;font-size:22px;margin:0 0 4px}
+p{color:#a8977e;max-width:70ch}
+button{background:#271e17;color:#efe6d4;border:1px solid #3a2e23;border-radius:4px;padding:8px 14px;cursor:pointer;font:inherit;margin-right:8px}
+button:disabled{opacity:.5}
+#out{margin-top:16px;font:12.5px/1.6 Consolas,monospace;white-space:pre-wrap}
+.ok{color:#8cc472}.bad{color:#e8675a}.dim{color:#6e604f}
+iframe{display:none}
+</style>
+</head>
+<body>
+<h1>Rizq test page</h1>
+<p>Runs checks against the real game in a hidden frame. <b>Checks</b> generates every depth for several seeds and exercises the core systems. <b>Balance</b> lets a bot play full runs without cheats and reports how far it gets.</p>
+<button id="runChecks" type="button">Run checks</button>
+<button id="runBalance" type="button">Run balance (12 games)</button>
+<div id="out"></div>
+<iframe id="game" src="index.html"></iframe>
+<script>
+const out=document.getElementById('out');
+const log=(t,c)=>{const d=document.createElement('div');if(c)d.className=c;d.textContent=t;out.appendChild(d);};
+const frame=document.getElementById('game');
+const ready=new Promise(r=>frame.addEventListener('load',()=>setTimeout(r,300)));
+const run=code=>frame.contentWindow.eval(code);
+const pause=()=>new Promise(r=>setTimeout(r,0));
+
+// ---- Checks: each returns an array of failure strings ----
+const CHECKS={
+ 'Every depth is connected (8 seeds × 26 depths)':`(()=>{SIM=true;const errs=[];
+  for(let s=1;s<=8;s++){newGame(7000+s);for(let d=1;d<=26;d++){const lv=d===1?G.levels[1]:genLevel(d);if(d>1)G.levels[d]=lv;
+   const dd=bfsT(lv.t,[idx(...lv.up)],i=>TD[lv.t[i]].pass);
+   if(lv.down&&dd[idx(...lv.down)]>=32767)errs.push('seed '+s+' depth '+d+': way onward unreachable');
+   for(const it of lv.items)if(dd[idx(it.x,it.y)]>=32767)errs.push('seed '+s+' depth '+d+': '+it.k+' unreachable');
+   if(HUBS[d]&&lv.mons.filter(m=>m.k==='trader').length!==1)errs.push('seed '+s+' depth '+d+': trader missing');
+   // Stairs change depth when stepped on, so the level must stay connected with both treated as walls.
+   const st=[idx(...lv.up)].concat(lv.down?[idx(...lv.down)]:[]);const start=st.map(i=>{const x=i%W,y=(i/W)|0;return DIRS.map(([dx,dy])=>idx(x+dx,y+dy)).find(j=>TD[lv.t[j]].pass&&!st.includes(j));})[0];
+   const d2=bfsT(lv.t,[start],i=>TD[lv.t[i]].pass&&!st.includes(i));
+   for(let i=0;i<N;i++)if(TD[lv.t[i]].pass&&!st.includes(i)&&d2[i]>=32767){errs.push('seed '+s+' depth '+d+': a staircase cuts off part of the level');break;}}}
+  return errs;})()`,
+ 'Dates tame livestock (1 for sheep, 2 for a camel)':`(()=>{SIM=true;newGame(4242);const e=[];
+  const place=k=>{const s=nearFree(L,idx(P.x,P.y),1,new Set(L.mons.map(m=>idx(m.x,m.y))))[0];const m=makeMon(k,s%W,(s/W)|0,1);L.mons.push(m);return m;};
+  const q=()=>(P.inv.find(i=>i.k==='dates')||{q:0}).q;
+  const a=place('sheep');playerMove(a.x-P.x,a.y-P.y);if(a.state!=='herd'||q()!==2)e.push('sheep not tamed with 1 handful');
+  const b=place('camel');playerMove(b.x-P.x,b.y-P.y);if(b.state!=='herd'||q()!==0)e.push('camel not tamed with 2 handfuls');
+  if(netWorth()!==3150)e.push('net worth with herd should be 3150, got '+netWorth());return e;})()`,
+ 'Trader: buy, sell, bank, gift, ride home':`(()=>{SIM=true;newGame(4242);const e=[];
+  const s=nearFree(L,idx(P.x,P.y),1,new Set())[0];const c=makeMon('camel',s%W,(s/W)|0,1);c.state='herd';L.mons.push(c);
+  changeLevel(1);const tr=L.mons.find(m=>m.k==='trader');if(!tr)return['no trader on depth 2'];
+  P.dinars=5000;openShop(tr);const click=a=>{const b=document.querySelector('#shopBody button[data-act="'+a+'"]');if(!b||b.disabled)e.push('button '+a+' unavailable');else b.click();};
+  click('sup:water');if(!P.inv.some(i=>i.k==='water'&&i.q>=3))e.push('water not bought');
+  click('dep');if(G.bank<=0||P.dinars!==0)e.push('deposit failed');
+  click('wd');if(G.bank!==0)e.push('withdraw failed');
+  addInv(Object.assign(makeItem('maamoul'),{q:1}));drawShop();click('gift');if(!tr.gift)e.push('gift not applied');
+  click('ride');if(G.depth!==1)e.push('ride home failed');if(!L.mons.some(m=>m.k==='camel'&&m.state==='herd'))e.push('camel did not ride home');
+  return e;})()`,
+ 'Herd that stays behind does not count':`(()=>{SIM=true;newGame(4242);const e=[];
+  const s=nearFree(L,idx(P.x,P.y),1,new Set())[0];const c=makeMon('camel',s%W,(s/W)|0,1);c.state='herd';L.mons.push(c);
+  toggleHerd();changeLevel(1);if(L.mons.some(m=>m.state==='herd'))e.push('herd followed while told to stay');
+  if(netWorth()>=3000)e.push('herd left behind still counted');return e;})()`,
+ 'Save and load round-trip':`(()=>{SIM=true;newGame(31337);changeLevel(1);const before=JSON.stringify({d:G.depth,p:[P.x,P.y],n:L.mons.length,i:P.inv.length});
+  deserialize(serialize());const after=JSON.stringify({d:G.depth,p:[P.x,P.y],n:L.mons.length,i:P.inv.length});return before===after?[]:['state changed: '+before+' vs '+after];})()`,
+ 'Old saves with barley load as dates':`(()=>{SIM=true;newGame(5);const s=JSON.parse(serialize());s.P.inv.push({id:999,k:'barley',c:4,letter:'y'});deserialize(JSON.stringify(s));
+  return P.inv.some(i=>i.k==='barley')?['barley still present']:[];})()`
+};
+
+// ---- Balance bot: plays without cheats ----
+const BOT=`window.__bot=function(seed,maxSteps){
+ SIM=true;const _r=render,_u=updateUI;render=()=>{};updateUI=()=>{};
+ newGame(seed);let err=null;
+ const has=k=>P.inv.find(i=>i.k===k);const dq=()=>(has('dates')||{q:0}).q;
+ const avg=it=>{const d=IT[it.k];return (d.dmg[0]+d.dmg[1])/2*Math.pow(1.065,it.ench-Math.max(0,d.str-P.str))*(d.slow?.5:1);};
+ const arm=x=>IT[x.k].armor+x.ench-Math.max(0,IT[x.k].str-P.str);
+ try{for(let step=0;step<maxSteps&&!G.over;step++){
+  if(invState)closeInv();if(targ)endTarget();if(shopM)closeShop();
+  computeFOV();distP=bfs([idx(P.x,P.y)],monPass);
+  const th=L.mons.filter(m=>isHostile(m)&&m.state!=='sleep'&&m.state!=='flee'&&canSee(m)&&cheb(m.x,m.y,P.x,P.y)<=8);
+  let did=false;
+  for(const it of P.inv){const d=IT[it.k];
+   if(d.cat==='tool'&&!isEquipped(it)&&(!eqItem('tool')||avg(it)>avg(eqItem('tool'))*1.1)){toggleEquip(it);did=true;break;}
+   if(d.cat==='outfit'&&!isEquipped(it)&&(!eqItem('outfit')||arm(it)>arm(eqItem('outfit')))){toggleEquip(it);did=true;break;}
+   if(d.cat==='acc'&&!isEquipped(it)&&(!P.eq.acc1||!P.eq.acc2)){toggleEquip(it);did=true;break;}
+   if(d.cat==='machboos'||d.cat==='protein'){useItem(it);did=true;break;}}
+  if(did)continue;
+  const c=has('course');if(c){const o=eqItem('outfit');const t=o&&step%2?o:eqItem('tool')||o;if(t){removeOne(c);t.ench++;}}
+  if(P.thirst<300){const w=has('water')||has('dates')||has('maamoul');if(w){useItem(w);continue;}}
+  if(P.hp<P.maxHp*.4){const ch=has('chai');if(ch&&!ch.cd){useCharm(ch);continue;}
+   if(th.length){const dr=P.inv.find(i=>IT[i.k].cat==='drink'&&(!G.known[i.k]||['juice','laban'].includes(i.k)));if(dr){useItem(dr);continue;}}}
+  const adj=L.mons.find(m=>isHostile(m)&&adjacentP(m));if(adj){playerMove(adj.x-P.x,adj.y-P.y);continue;}
+  if(th.length||P.hp<P.maxHp*.7){rest();continue;}
+  const lv=L.mons.find(m=>m.state==='neutral'&&MT[m.k].kind==='livestock'&&cheb(m.x,m.y,P.x,P.y)===1&&!diagBlocked(P.x,P.y,m.x,m.y)&&dq()>=(MT[m.k].feed||1)+1);
+  if(lv){playerMove(lv.x-P.x,lv.y-P.y);continue;}
+  const tr=L.mons.find(m=>m.k==='trader'&&cheb(m.x,m.y,P.x,P.y)<=2);
+  if(tr&&(P.dinars>0||sellable().length)){for(const a of sellable()){P.dinars+=MT[a.k].value;L.mons=L.mons.filter(o=>o!==a);}
+   if(netWorth()>=100000+rideFee()&&G.depth>1){P.dinars+=G.bank;G.bank=0;P.dinars-=rideFee();goToLevel(1,'home',-1);continue;}
+   G.bank+=P.dinars;P.dinars=0;}
+  if(netWorth()>=100000){const g=L.up;if(cheb(g[0],g[1],P.x,P.y)===1&&!diagBlocked(P.x,P.y,g[0],g[1])){playerMove(g[0]-P.x,g[1]-P.y);continue;}
+   auto={type:'travel',goal:g,seen:new Set(),n:0};const ok=travelStep();auto=null;if(!ok)rest();continue;}
+  auto={type:'explore',seen:new Set(),n:0};const ok=exploreStep();auto=null;
+  if(!ok){if(L.down){auto={type:'travel',goal:L.down,seen:new Set(),n:0};if(!travelStep())rest();auto=null;}else rest();}
+ }}catch(e){err=e.message;}
+ render=_r;updateUI=_u;SIM=false;
+ return {seed,won:!!(G.over&&G.over.won),cause:G.over?G.over.cause:'turn limit',deepest:G.stats.deepest,turn:G.turn,net:Math.round(netWorth()),maxHp:P.maxHp,err};
+};1`;
+
+async function runChecks(){
+ await ready;out.textContent='';let fails=0;
+ for(const[name,code]of Object.entries(CHECKS)){await pause();
+  let errs;try{errs=run(code);}catch(e){errs=['threw: '+e.message];}
+  if(errs.length){fails++;log('✗ '+name,'bad');errs.slice(0,8).forEach(x=>log('    '+x,'bad'));}else log('✓ '+name,'ok');}
+ log(fails?`${fails} check(s) failed.`:'All checks passed.',fails?'bad':'ok');
+ return fails;
+}
+async function runBalance(n=12){
+ await ready;out.textContent='';run(BOT);const res=[];
+ for(let s=1;s<=n;s++){await pause();const r=run(`__bot(${9000+s},40000)`);res.push(r);
+  log(`seed ${r.seed}: ${r.won?'WON':'ended'} · deepest ${r.deepest} · ${r.turn} turns · net worth ${r.net.toLocaleString()} KD · max energy ${r.maxHp} · ${r.cause}${r.err?' · ERROR '+r.err:''}`,r.err?'bad':r.won?'ok':'');}
+ const med=a=>{const s=[...a].sort((x,y)=>x-y);return s[s.length>>1];};
+ log(`Median deepest ${med(res.map(r=>r.deepest))} · median net worth ${med(res.map(r=>r.net)).toLocaleString()} KD · wins ${res.filter(r=>r.won).length}/${n}`,'dim');
+ return res;
+}
+document.getElementById('runChecks').onclick=runChecks;
+document.getElementById('runBalance').onclick=()=>runBalance(12);
+window.rizqTests={runChecks,runBalance};
+</script>
+</body>
+</html>

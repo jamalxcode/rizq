@@ -68,19 +68,33 @@ aside#side{width:236px;flex:none;border-right:1px solid var(--line);padding-bloc
 #log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--faint)}
 #log div.new{color:var(--fg)} #log div.new.bad{color:var(--bad)} #log div.new.good{color:var(--good)} #log div.new.gold{color:var(--gold)} #log div.new.warn{color:var(--warn)}
 #wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding-block:8px;padding-inline:16px;position:relative}
-canvas{display:block;touch-action:manipulation;cursor:crosshair}
+canvas{display:block;touch-action:none;cursor:crosshair}
+.hbtn{background:none;border:1px solid var(--line);color:var(--dim);font:500 11px var(--ui);padding:4px 9px;border-radius:3px;cursor:pointer;flex:none}
+.hbtn:hover{color:var(--fg);border-color:var(--dim)}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px 22px}
+.shop-sec h3{margin:14px 0 4px;font:600 10.5px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.shop-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.shop-row small{display:block;color:var(--faint);font-size:11.5px;margin-top:1px}
+.shop-row .price{font-family:var(--mono);color:var(--gold);font-variant-numeric:tabular-nums}
+.btn.sm{padding:5px 11px;font-size:12.5px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.wallet{display:flex;gap:16px;flex-wrap:wrap;font:12px var(--mono);color:var(--dim);margin:2px 0 4px}
+.wallet b{color:var(--gold);font-weight:600}
+.daily{font-size:12px;color:var(--faint);margin-top:8px}
 #hover{font-family:var(--mono);font-size:12px;color:var(--dim);padding-block:6px;padding-inline:16px;border-top:1px solid var(--line);min-height:calc(2 * 1.45em + 12px);line-height:1.45;background:var(--panel)}
 #hover b{color:var(--fg);font-weight:600}
 #banner{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font:600 12.5px var(--ui);padding:6px 12px;border-radius:4px;display:flex;gap:10px;align-items:center;max-width:calc(100% - 32px)}
 #banner button{background:var(--ink);color:var(--gold);border:0;border-radius:3px;padding:3px 8px;cursor:pointer;font-weight:600}
 
 #pad{display:none;flex:none;gap:10px 14px;padding-block:8px;padding-inline:16px;border-top:1px solid var(--line);background:var(--panel);justify-content:center;flex-wrap:wrap}
-.dpad{display:grid;grid-template-columns:repeat(3,46px);grid-auto-rows:42px;gap:4px}
-.acts{display:grid;grid-template-columns:repeat(3,minmax(64px,1fr));grid-auto-rows:42px;gap:4px}
+.dpad{display:grid;grid-template-columns:repeat(3,44px);grid-auto-rows:42px;gap:4px}
+.acts{display:grid;grid-template-columns:repeat(3,minmax(54px,1fr));grid-auto-rows:42px;gap:4px}
+@media (max-width:520px){#pad{flex-wrap:nowrap;gap:10px} #pad .acts{flex:1 1 0;min-width:0} #pad .acts button{font-size:12px;padding:0 2px;min-width:0;overflow:hidden;white-space:nowrap}}
 #pad button{background:var(--panel2);border:1px solid var(--line);border-radius:5px;font-size:13px;cursor:pointer;touch-action:manipulation}
 #pad .dpad button{font-size:17px}
 #pad button:active{background:var(--line)}
-@media (max-width:860px),(pointer:coarse){#pad{display:flex} aside#side{display:none}}
+@media (max-width:700px),(pointer:coarse){#pad{display:flex}}
+@media (max-width:700px){aside#side{display:none}}
 @media (max-width:520px){.brand .en{display:none} .depth{text-align:left}}
 
 .overlay{position:fixed;inset:0;background:rgba(12,9,7,.88);display:flex;align-items:center;justify-content:center;padding-block:16px;padding-inline:16px;z-index:10}
@@ -127,6 +141,7 @@ canvas{display:block;touch-action:manipulation;cursor:crosshair}
     <div class="meter"><div class="row"><span>Thirst</span><b id="thTxt">Fine</b></div><div class="bar"><i id="thBar" style="background:var(--sea)"></i></div></div>
     <div class="meter worth"><div class="row"><span>Net worth</span><b id="nwTxt">0 / 100,000 KD</b></div><div class="bar"><i id="nwBar" style="background:var(--gold)"></i></div></div>
     <div class="depth"><b id="zoneTxt">The Neighborhood</b><span id="depthTxt">Depth 1 of 26</span></div>
+    <button class="hbtn" id="sndBtn" type="button" aria-pressed="true">Sound on</button>
   </header>
   <div class="sadu" aria-hidden="true"></div>
   <main class="play">
@@ -150,7 +165,8 @@ canvas{display:block;touch-action:manipulation;cursor:crosshair}
     </div>
     <div class="acts">
       <button data-a="explore">Explore</button><button data-a="down">Onward ›</button><button data-a="up">‹ Back</button>
-      <button data-a="bag">Bag</button><button data-a="rest">Rest</button><button data-a="help">Help</button>
+      <button data-a="bag">Bag</button><button data-a="rest">Rest</button><button data-a="herd">Herd</button>
+      <button data-a="zoomout" aria-label="Zoom out">Zoom −</button><button data-a="zoomin" aria-label="Zoom in">Zoom +</button><button data-a="help">Help</button>
     </div>
   </div>
 </div>
@@ -162,15 +178,17 @@ canvas{display:block;touch-action:manipulation;cursor:crosshair}
     <p>You’re young, ambitious and ready to build something. Your uncle keeps sending voice notes full of advice. So you go out and make your own <b style="color:var(--fg)">rizq</b>: from the Friday market, through Shuwaikh’s scrapyards and the Wafra farms, out to the winter camps and the deep desert.</p>
     <div class="sadu" aria-hidden="true"></div>
     <div class="goal">
-      <div><b>Reach 100,000 KD</b>Cash plus the value of your herd and animals.</div>
+      <div><b>Reach 100,000 KD</b>Cash, savings, and the animals walking with you.</div>
       <div><b>Then get home</b>Walk back through your front door ⌂ on depth 1.</div>
       <div><b>One life</b>Pass out and the run is over. Deeper pays more.</div>
     </div>
     <div class="btns">
       <button class="btn primary" id="btnNew" type="button">New run</button>
+      <button class="btn" id="btnDaily" type="button">Daily run</button>
       <button class="btn" id="btnCont" type="button" hidden>Continue run</button>
       <button class="btn" id="btnHelp" type="button">How to play</button>
     </div>
+    <p class="daily" id="dailyTxt">Daily run: everyone gets the same map today.</p>
     <label class="seed" for="seedIn">Seed (optional) <input id="seedIn" inputmode="numeric" placeholder="random"></label>
   </div>
 </div>
@@ -180,6 +198,16 @@ canvas{display:block;touch-action:manipulation;cursor:crosshair}
     <h2 id="invTitle">Your bag</h2>
     <div class="inv"><div id="invList"></div><div class="detail" id="invDetail"></div></div>
     <div class="btns"><button class="btn" id="invClose" type="button">Close (Esc)</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="shop" hidden>
+  <div class="card" style="max-width:760px">
+    <h2 id="shopTitle">Trader</h2>
+    <p id="shopIntro" style="margin:0 0 6px"></p>
+    <div class="wallet" id="shopWallet"></div>
+    <div class="shop-grid" id="shopBody"></div>
+    <div class="btns"><button class="btn" id="shopClose" type="button">Done (Esc)</button></div>
   </div>
 </div>
 
@@ -195,10 +223,14 @@ canvas{display:block;touch-action:manipulation;cursor:crosshair}
       <kbd>i</kbd><span>Open your bag to use, equip, throw or drop things.</span>
       <kbd>t</kbd><span>Throw pebbles, firecrackers or treats.</span>
       <kbd>g</kbd><span>Pick up what's under you.</span>
-      <kbd>click / tap</kbd><span>Walk to a spot. Hover to inspect anything.</span>
+      <kbd>f</kbd><span>Tell your herd to stay put or follow you.</span>
+      <kbd>-  =</kbd><span>Zoom the map out / in.</span>
+      <kbd>m</kbd><span>Sound on or off.</span>
+      <kbd>click / tap</kbd><span>Walk to a spot. Hover, or press and hold on a phone, to inspect anything. Swipe to step.</span>
     </div>
+    <p><b style="color:var(--fg)">Traders</b> wait by the way back on some depths: Bu Fahad's diwaniya, a garage, the farm market, a camp, and a Bedouin trader. Buy supplies and gear, sell animals, put cash in the bank where crows can't reach it, or pay for a ride home. Bring ma'amoul and they give you a better price.</p>
     <p><b style="color:var(--fg)">No experience points.</b> You get stronger from what you find. <b style="color:var(--gold)">Training courses ♦</b> improve one item each, so choose carefully. Unknown drinks and tips are a gamble until you try them. Sleeping animals take triple damage if you sneak up on them.</p>
-    <p><b style="color:var(--fg)">Money:</b> barley wins over sheep, goats and camels, which follow you and add to your net worth. Dog treats turn a dog, fox, wolf or hyena into a loyal friend. Untie captive salukis and falcons. They're valuable. Watch your thirst, especially in the deep desert.</p>
+    <p><b style="color:var(--fg)">Money:</b> hand-feed dates to sheep and goats (one handful) or camels (two) to win them over. Animals only count toward your net worth while they're with you, so bring them home or sell them to a trader. Wolves and hyenas go after your herd. Dog treats turn a dog, fox, wolf or hyena into a loyal friend. Untie captive salukis and falcons. They're valuable. Watch your thirst, especially in the deep desert.</p>
     <div class="btns"><button class="btn primary" id="helpClose" type="button">Got it</button></div>
   </div>
 </div>
@@ -239,7 +271,7 @@ function wpick(pairs){let t=0;for(const p of pairs)t+=p[1];let r=rand()*t;for(co
 function hash(x,y,z){let h=(Math.imul(x,374761393)+Math.imul(y,668265263)+Math.imul(z,2246822519))|0;h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967296;}
 
 // ================= TILES =================
-const T={WALL:0,FLOOR:1,DOOR:2,DOWN:3,UP:4,GRASS:5,SHRUB:6,WATER:7,SABKHA:8,OIL:9,PALM:10,CAR:11,SCRAP:12,FENCE:13,SAND:14,DUNE:15,ASH:16,TENT:17,HOME:18,PED:19,STALL:20};
+const T={WALL:0,FLOOR:1,DOOR:2,DOWN:3,UP:4,GRASS:5,SHRUB:6,WATER:7,SABKHA:8,OIL:9,PALM:10,CAR:11,SCRAP:12,FENCE:13,SAND:14,DUNE:15,ASH:16,TENT:17,HOME:18,PED:19,STALL:20,SHELF:21,CONT:22,TILE:23};
 const TD=[];
 function td(id,o){TD[id]=Object.assign({ch:'·',fg:[150,150,150],bg:[20,20,20],pass:true,opaque:false,wall:false,flam:0,slow:false,name:'ground',desc:''},o);}
 td(T.WALL,{ch:'#',pass:false,opaque:true,wall:true,name:'wall'});
@@ -263,16 +295,20 @@ td(T.ASH,{ch:',',fg:[100,94,88],bg:[28,25,23],name:'ashes',desc:'Something burne
 td(T.TENT,{ch:'∆',fg:[236,224,200],bg:[96,62,40],pass:false,opaque:true,flam:.3,name:'camp tent',desc:'A winter camp tent. Someone’s uncle is definitely inside watching football.'});
 td(T.PED,{ch:'_',fg:[236,196,96],bg:[84,64,26],name:'deal table',desc:'An opportunity. Take one item here and the other offers disappear.'});
 td(T.STALL,{ch:'Π',fg:[226,176,96],bg:[86,42,30],pass:false,name:'market stall',desc:'A Friday market stall: old phones, carpets, mystery cables.'});
-const FLOORLIKE=new Set([T.FLOOR,T.SAND,T.GRASS,T.ASH]);
+td(T.SHELF,{ch:'≡',fg:[214,196,150],bg:[60,52,40],pass:false,name:'co-op shelves',desc:'Rice, cardamom, and forty brands of the same tissues.'});
+td(T.CONT,{ch:'▬',fg:[200,90,60],bg:[50,30,24],pass:false,opaque:true,name:'shipping container',desc:'A stack of shipping containers. You can’t see past it.'});
+td(T.TILE,{ch:'·',fg:[150,140,124],bg:[52,46,40],name:'tiled floor',desc:'Inside a house. Shoes off would be polite.'});
+const FLOORLIKE=new Set([T.FLOOR,T.SAND,T.GRASS,T.ASH,T.TILE]);
 const CAR_COLS=[[236,236,232],[196,200,206],[96,100,112],[196,52,46],[222,204,160],[70,110,170]];
+const CONT_COLS=[[200,90,60],[70,120,170],[90,150,90],[210,170,60],[160,160,170]];
 
 const ZONES=[
- {id:0,name:'The Neighborhood',from:1,to:4,gen:'rooms',vis:11,heat:1,floor:{fg:[128,116,100],bg:[37,32,28]},wall:{fg:[204,184,150],bg:[108,90,70]},
+ {id:0,name:'The Neighborhood',from:1,to:4,gen:'city',vis:11,heat:1,floor:{fg:[128,116,100],bg:[37,32,28]},wall:{fg:[204,184,150],bg:[108,90,70]},
   arrive:'Your neighborhood and the Friday market. Stray cats, crows and dogs everywhere.'},
- {id:1,name:'Shuwaikh Industrial',from:5,to:9,gen:'rooms',big:true,vis:9,heat:1.1,floor:{fg:[116,116,122],bg:[29,30,33]},wall:{fg:[164,164,172],bg:[74,76,84]},
+ {id:1,name:'Shuwaikh Industrial',from:5,to:9,gen:'yard',vis:9,heat:1.1,floor:{fg:[116,116,122],bg:[29,30,33]},wall:{fg:[164,164,172],bg:[74,76,84]},
   arrive:'Shuwaikh Industrial. Garages, scrapyards, and dogs that have never once been friendly.'},
  {id:2,name:'Wafra Farms',from:10,to:14,gen:'farm',vis:13,heat:1.2,floor:{fg:[134,112,76],bg:[44,36,23]},wall:{fg:[194,162,116],bg:[116,90,58]},
-  arrive:'The farms of Wafra. Palms, pens, and roosters with something to prove. Barley wins over livestock.'},
+  arrive:'The farms of Wafra. Palms, pens, and roosters with something to prove. Save some dates: livestock love them.'},
  {id:3,name:'The Winter Camps',from:15,to:20,gen:'cave',fill:.42,vis:12,heat:.9,floor:{fg:[202,172,116],bg:[66,52,33]},wall:{fg:[198,148,96],bg:[122,82,52]},
   arrive:'Winter camp season. Tents, grilled meat on the breeze, and vipers under every bush.'},
  {id:4,name:'The Deep Desert',from:21,to:26,gen:'cave',fill:.40,vis:10,heat:1.6,storms:true,floor:{fg:[218,188,128],bg:[84,64,40]},wall:{fg:[178,128,86],bg:[104,68,42]},
@@ -285,37 +321,40 @@ const floorOf=z=>z.gen==='cave'?T.SAND:T.FLOOR;
 const MT={
  pigeon:{name:'pigeon',ch:'p',col:[176,180,196],hp:3,def:10,acc:0,dmg:[0,0],kind:'critter',erratic:.6,flighty:true,desc:'Fat, unbothered and everywhere.'},
  cat:{name:'stray cat',ch:'c',col:[224,168,98],hp:6,def:15,acc:70,dmg:[1,2],kind:'hostile',verb:'scratches',stealFood:true,fleeAt:.5,off:'hisses and vanishes over a wall.',desc:'Will steal your dates if you let it.'},
- crow:{name:'house crow',ch:'v',col:[160,164,180],hp:5,def:25,acc:80,dmg:[1,2],speed:50,kind:'hostile',verb:'pecks',erratic:.3,stealMoney:true,off:'flaps away, cawing insults.',desc:'Fast, clever, and very interested in your cash.'},
+ crow:{name:'house crow',ch:'v',col:[160,164,180],hp:5,def:25,acc:80,dmg:[1,2],speed:50,kind:'hostile',verb:'pecks',erratic:.3,stealMoney:true,hitrun:true,off:'flaps away, cawing insults.',desc:'Fast, clever, and very interested in your cash. Pecks, then flies back out of reach.'},
  rat:{name:'rat',ch:'r',col:[170,144,118],hp:6,def:0,acc:70,dmg:[1,3],kind:'hostile',verb:'bites',off:'scurries into a drain.',desc:'A large, confident rat.'},
  dog:{name:'stray dog',ch:'d',col:[210,170,118],hp:10,def:10,acc:70,dmg:[2,4],kind:'hostile',verb:'bites',canine:true,pack:[1,3],off:'yelps and runs off for good.',desc:'Hungry and usually not alone.'},
  yarddog:{name:'scrapyard dog',ch:'d',col:[190,140,96],hp:14,def:15,acc:85,dmg:[2,5],kind:'hostile',verb:'bites',canine:true,pack:[2,4],off:'bolts behind a container.',desc:'Lives between the scrap piles. Travels in packs.'},
  tomcat:{name:'feral tomcat',ch:'c',col:[232,124,70],hp:14,def:30,acc:90,dmg:[2,5],kind:'hostile',verb:'claws',fleeAt:.3,off:'yowls and disappears.',desc:'Scarred, huge and in charge of this block.'},
  guard:{name:'guard dog',ch:'D',col:[214,126,72],hp:24,def:20,acc:100,dmg:[3,7],kind:'hostile',verb:'bites',canine:true,off:'retreats, still growling.',desc:'Someone trained this one to guard a garage. It takes the job seriously.'},
- sheep:{name:'sheep',ch:'s',col:[238,234,220],hp:12,def:0,acc:0,dmg:[0,0],kind:'livestock',value:150,desc:'Worth about 150 KD. Barley wins it over.'},
- goat:{name:'goat',ch:'g',col:[200,164,122],hp:12,def:10,acc:0,dmg:[0,0],kind:'livestock',value:120,desc:'Worth about 120 KD. Barley wins it over. It’s judging you.'},
- camel:{name:'camel',ch:'C',col:[224,194,138],hp:40,def:10,acc:0,dmg:[0,0],kind:'livestock',value:3000,desc:'Worth about 3,000 KD. Barley wins it over.'},
+ sheep:{name:'sheep',ch:'s',col:[238,234,220],hp:12,def:0,acc:0,dmg:[0,0],kind:'livestock',value:150,feed:1,desc:'Worth about 150 KD. A handful of dates wins it over.'},
+ goat:{name:'goat',ch:'g',col:[200,164,122],hp:12,def:10,acc:0,dmg:[0,0],kind:'livestock',value:120,feed:1,desc:'Worth about 120 KD. A handful of dates wins it over. It’s judging you.'},
+ camel:{name:'camel',ch:'C',col:[224,194,138],hp:40,def:10,acc:0,dmg:[0,0],kind:'livestock',value:3000,feed:2,desc:'Worth about 3,000 KD. Camels love dates: two handfuls win it over.'},
  rooster:{name:'angry rooster',ch:'k',col:[234,92,60],hp:8,def:30,acc:90,dmg:[1,3],speed:50,kind:'hostile',verb:'pecks',off:'struts off, pretending it won.',desc:'Small, fast, and furious about something.'},
  farmdog:{name:'farm dog',ch:'d',col:[224,194,144],hp:18,def:20,acc:95,dmg:[3,5],kind:'hostile',verb:'bites',canine:true,pack:[1,2],off:'runs back to the farmhouse.',desc:'Guards the farm. Doesn’t know you’re one of the good guys.'},
- bee:{name:'honeybee',ch:'b',col:[244,200,52],hp:3,def:70,acc:100,dmg:[1,2],speed:50,kind:'hostile',verb:'stings',erratic:.33,poison:1,pack:[3,5],off:'buzzes off.',desc:'Hard to hit. Comes in swarms.'},
+ bee:{name:'honeybee',ch:'b',col:[244,200,52],hp:3,def:70,acc:100,dmg:[1,2],speed:50,kind:'hostile',verb:'stings',erratic:.33,poison:1,pack:[3,5],swarm:true,off:'buzzes off.',desc:'Hard to hit. Comes in swarms: hit one and the whole hive comes for you.'},
  lizard:{name:'dhab lizard',ch:'l',col:[204,184,104],hp:14,def:20,acc:0,dmg:[0,0],kind:'critter',erratic:.15,desc:'A spiny-tailed lizard minding its own business. Please do the same.'},
- viper:{name:'horned viper',ch:'S',col:[220,198,156],hp:14,def:35,acc:110,dmg:[2,4],kind:'hostile',verb:'bites',poison:4,ambush:true,off:'slithers away into the sand.',desc:'Buried in the sand, waiting. Venomous.'},
- scorpion:{name:'yellow scorpion',ch:'x',col:[238,208,92],hp:10,def:60,acc:100,dmg:[1,3],kind:'hostile',verb:'stings',poison:5,off:'scuttles under a rock.',desc:'Hard shell, nasty sting.'},
+ viper:{name:'horned viper',ch:'S',col:[220,198,156],hp:14,def:35,acc:110,dmg:[2,4],kind:'hostile',verb:'bites',poison:4,ambush:true,hidden:true,off:'slithers away into the sand.',desc:'Buried in the sand, waiting. You won’t see it until you’re close. Venomous.'},
+ scorpion:{name:'yellow scorpion',ch:'x',col:[238,208,92],hp:10,def:60,acc:100,dmg:[1,3],kind:'hostile',verb:'stings',poison:5,hidden:true,off:'scuttles under a rock.',desc:'Hides under rocks until you’re close. Hard shell, nasty sting.'},
  spider:{name:'camel spider',ch:'X',col:[214,152,102],hp:18,def:40,acc:110,dmg:[3,6],speed:50,kind:'hostile',verb:'bites',off:'skitters off at alarming speed.',desc:'Not a spider, not a scorpion, definitely too fast.'},
  fox:{name:'red fox',ch:'f',col:[234,122,52],hp:15,def:35,acc:100,dmg:[2,5],kind:'hostile',verb:'bites',canine:true,stealFood:true,fleeAt:.4,off:'darts off into the dunes.',desc:'Clever. Will steal your dates.'},
- wolf:{name:'Arabian wolf',ch:'w',col:[196,190,176],hp:32,def:45,acc:125,dmg:[4,8],speed:50,kind:'hostile',verb:'bites',canine:true,pack:[2,4],off:'slinks off into the dunes.',desc:'Lean, fast and hunts in packs.'},
- hyena:{name:'striped hyena',ch:'H',col:[206,190,134],hp:55,def:50,acc:125,dmg:[6,12],kind:'hostile',verb:'mauls',canine:true,off:'cackles nervously and backs away.',desc:'Powerful jaws. Don’t let it corner you.'},
- bull:{name:'bull camel',ch:'C',col:[174,122,80],hp:90,def:30,acc:120,dmg:[8,14],kind:'hostile',verb:'kicks',off:'snorts and lumbers off.',desc:'A camel in a very bad mood. It’s that season.'},
+ wolf:{name:'Arabian wolf',ch:'w',col:[196,190,176],hp:28,def:45,acc:120,dmg:[3,7],speed:50,kind:'hostile',verb:'bites',canine:true,pack:[2,3],howl:true,predator:true,off:'slinks off into the dunes.',desc:'Lean and fast. When one finds you, it howls and the whole pack comes. Bites harder with packmates beside it, and loves to pick off your herd.'},
+ hyena:{name:'striped hyena',ch:'H',col:[206,190,134],hp:55,def:50,acc:125,dmg:[6,12],kind:'hostile',verb:'mauls',canine:true,cautious:true,predator:true,off:'cackles nervously and backs away.',desc:'Powerful jaws. It circles and waits until you’re hurt before it commits. Also hunts your herd.'},
+ bull:{name:'bull camel',ch:'C',col:[174,122,80],hp:90,def:30,acc:120,dmg:[8,14],kind:'hostile',verb:'kicks',charge:true,off:'snorts and lumbers off.',desc:'A camel in a very bad mood. It charges in straight lines, so step out of its path. Winded after a charge.'},
  monitor:{name:'desert monitor',ch:'L',col:[156,176,104],hp:45,def:60,acc:120,dmg:[5,10],kind:'hostile',verb:'whips',off:'waddles off, offended.',desc:'A big, armored waral lizard.'},
- stalker:{name:'deathstalker',ch:'x',col:[252,238,156],hp:20,def:80,acc:130,dmg:[2,5],kind:'hostile',verb:'stings',poison:10,off:'retreats into a crack.',desc:'The most venomous scorpion out here.'},
+ stalker:{name:'deathstalker',ch:'x',col:[252,238,156],hp:20,def:80,acc:130,dmg:[2,5],kind:'hostile',verb:'stings',poison:10,hidden:true,off:'retreats into a crack.',desc:'The most venomous scorpion out here. Hides until you’re close.'},
  saluki:{name:'saluki',ch:'d',col:[248,244,234],hp:30,def:40,acc:120,dmg:[3,7],speed:50,kind:'captive',canine:true,value:800,verb:'bites',desc:'A sleek hunting dog, tied up and left behind. Untie it and it’s yours. Worth about 800 KD.'},
  falcon:{name:'saker falcon',ch:'F',col:[214,178,132],hp:22,def:70,acc:140,dmg:[4,8],speed:50,kind:'captive',value:5000,verb:'strikes',desc:'A trained saker falcon on a perch. Untie it and it’s yours. Worth about 5,000 KD.'},
- cousin:{name:'your cousin',ch:'@',col:[120,184,255],hp:30,def:30,acc:110,dmg:[3,7],kind:'summon',verb:'shoves',desc:'Showed up “in five minutes” (forty). Fights for you until his mom calls.'}
+ cousin:{name:'your cousin',ch:'@',col:[120,184,255],hp:30,def:30,acc:110,dmg:[3,7],kind:'summon',verb:'shoves',desc:'Showed up “in five minutes” (forty). Fights for you until his mom calls.'},
+ trader:{name:'trader',ch:'@',col:[120,226,160],hp:999,def:100,acc:0,dmg:[0,0],kind:'npc',desc:'Walk into them to trade, bank your cash, sell animals or pay for a ride home.'}
 };
+// Traders wait beside the way back on these depths.
+const HUBS={2:'Bu Fahad’s diwaniya',5:'Abu Salem’s garage',9:'the Shuwaikh tea stand',12:'the Wafra farm market',16:'Abu Nasser’s winter camp',20:'the camp owner’s majlis',24:'a Bedouin trader'};
 const SPAWN=[['pigeon',1,5,6],['rat',1,7,10],['dog',1,6,10],['cat',1,6,8],['crow',1,9,6],
  ['yarddog',5,11,10],['tomcat',4,11,7],['guard',6,13,7],
  ['rooster',9,15,8],['farmdog',10,16,9],['bee',10,16,6],
  ['lizard',14,22,5],['viper',15,26,8],['scorpion',14,22,8],['spider',15,24,7],['fox',14,22,7],
- ['wolf',20,26,10],['hyena',21,26,7],['bull',21,26,4],['monitor',20,26,6],['stalker',22,26,6]];
+ ['wolf',21,26,10],['hyena',21,26,7],['bull',21,26,4],['monitor',20,26,6],['stalker',22,26,6]];
 
 // ================= ITEMS =================
 const IT={
@@ -343,8 +382,9 @@ const IT={
  wrong:{cat:'tip',name:'tip: bad directions',bad:true,desc:'Leads trouble right to you.'},
  course:{cat:'course',name:'training course',plural:'training courses',ch:'♦',col:[252,212,92],desc:'Improves one item by +1: a tool, outfit, gadget, accessory, treat bag or charm. This is how you build your character, so choose carefully.'},
  water:{cat:'water',name:'bottle of water',plural:'bottles of water',ch:'!',col:[150,212,255],desc:'Fully quenches your thirst.'},
- dates:{cat:'dates',name:'handful of dates',plural:'handfuls of dates',ch:':',col:[178,96,52],desc:'Sweet khalas dates. Eases your thirst a little and gives a bit of energy.'},
+ dates:{cat:'dates',name:'handful of dates',plural:'handfuls of dates',ch:':',col:[178,96,52],desc:'Sweet khalas dates. Eat them for a little energy and to ease your thirst, or hand-feed them to livestock to win them over: one handful for a sheep or goat, two for a camel.'},
  machboos:{cat:'machboos',name:"mom's machboos",plural:"portions of mom's machboos",ch:':',col:[248,172,60],desc:'Wrapped in foil, still warm. Fully restores energy and raises your max energy by 10.'},
+ maamoul:{cat:'gift',name:"box of ma'amoul",plural:"boxes of ma'amoul",ch:'&',col:[222,170,104],desc:'Date-filled cookies, the kind you bring when you visit. Give a box to a trader for a better price, or eat one yourself.'},
  protein:{cat:'protein',name:'protein shake',plural:'protein shakes',ch:'!',col:[240,240,240],desc:'From your gym-obsessed friend. Raises your fitness by 1, so heavier tools and outfits work properly.'},
  pebbles:{cat:'pebbles',name:'pebble',plural:'pebbles',ch:'•',col:[184,174,162],desc:'Throw them at animals for 2–4 damage. Pick them up again afterward.'},
  flashlight:{cat:'gadget',name:'flashlight app',ch:'/',col:[255,242,172],max:3,rech:300,desc:'Dazzles one animal so it can’t act for a few turns.'},
@@ -352,7 +392,6 @@ const IT={
  cousin:{cat:'gadget',name:'call-a-cousin',ch:'/',col:[120,184,255],max:1,rech:800,desc:'Calls your cousin, who fights beside you for a while.'},
  drone:{cat:'gadget',name:'camera drone',ch:'/',col:[184,224,224],max:2,rech:500,desc:'Maps the area around you.'},
  dogtreats:{cat:'treat',name:'bag of dog treats',ch:'-',col:[206,134,82],desc:'Throw one at a dog, fox, wolf or hyena and it becomes your loyal friend.'},
- barley:{cat:'treat',name:'sack of barley',ch:'-',col:[226,204,122],desc:'Walk into a sheep, goat or camel to win it over. Your herd follows you and adds to your net worth.'},
  firecrackers:{cat:'treat',name:'string of firecrackers',ch:'-',col:[236,72,60],desc:'Throw for a loud, fiery bang. Hurts and scares animals and sets dry plants alight.'},
  shemagh:{cat:'acc',name:'shemagh',ch:'=',col:[234,84,84],desc:'A red-and-white headscarf. Keeps the sun off, so you get thirsty more slowly.'},
  sandals:{cat:'acc',name:'quiet sandals',ch:'=',col:[186,144,104],desc:'Soft soles. Animals don’t notice you until you’re closer.'},
@@ -362,7 +401,19 @@ const IT={
  gahwa:{cat:'charm',name:'dalla of gahwa',ch:'¤',col:[232,202,112],cd:700,desc:'Arabic coffee from a brass dalla. A few small cups make you fast for a while. Refills over time.'},
  carkeys:{cat:'charm',name:'car keys',ch:'¤',col:[204,204,214],cd:900,desc:'Drive straight back to the way up. Refills over time.'}
 };
-const STACK=new Set(['drink','tip','course','water','dates','machboos','protein','pebbles']);
+const STACK=new Set(['drink','tip','course','water','dates','machboos','protein','pebbles','gift']);
+// Special properties ("runes") that some tools and outfits carry. Revealed when they first trigger or the item is identified.
+const RUNES={
+ quick:{on:'tool',name:'quick',desc:'Light in the hand: each swing takes half the time.'},
+ stun:{on:'tool',name:'stunning',desc:'One in four hits leaves the animal dazed for a moment.'},
+ fortune:{on:'tool',name:'lucky',desc:'Animals you drive off sometimes leave cash behind.'},
+ sure:{on:'tool',name:'steady',desc:'Easier to aim: you hit far more often.'},
+ cool:{on:'outfit',name:'breezy',desc:'Breathes well: you get thirsty much more slowly.'},
+ thorny:{on:'outfit',name:'thorny',desc:'Covered in burrs: animals that hit you get hurt too.'},
+ sand:{on:'outfit',name:'desert-ready',desc:'Made for the desert: no getting stuck in sabkha, no slowing in dunes, no sand in your throat.'},
+ pockets:{on:'outfit',name:'zipped',desc:'Zipped pockets: crows can’t steal your cash.'}
+};
+const runesFor=cat=>Object.keys(RUNES).filter(k=>RUNES[k].on===cat);
 const DRINKS=['juice','laban','energy','mint','spoiled','soda'];
 const TIPS=['shortcut','maptip','ask','lucky','loud','wrong'];
 const DRINK_APPS=[{n:'neon-green can',pl:'neon-green cans',col:[150,240,92]},{n:'red can',pl:'red cans',col:[234,72,62]},{n:'cloudy bottle',pl:'cloudy bottles',col:[222,222,212]},{n:'orange carton',pl:'orange cartons',col:[246,152,52]},{n:'blue can',pl:'blue cans',col:[84,144,242]},{n:'purple bottle',pl:'purple bottles',col:[176,104,224]}];
@@ -376,17 +427,17 @@ function catWeights(cat){
   case 'tool':return [['pipe',30],['shovel',20],['pitchfork',25],['sledge',15],['stick',6]];
   case 'outfit':return [['overalls',30],['jacket',25],['bisht',20],['safety',15],['dishdasha',6]];
   case 'gadget':return [['flashlight',30],['airhorn',25],['cousin',20],['drone',25]];
-  case 'treat':return [['dogtreats',40],['barley',40],['firecrackers',30]];
+  case 'treat':return [['dogtreats',40],['firecrackers',30]];
   case 'acc':return [['shemagh',1],['sandals',1],['watch',1],['band',1]];
   case 'charm':return [['chai',40],['gahwa',30],['carkeys',30]];
  } return [[cat,1]];
 }
-const ITEM_TABLE=[['drink',22],['tip',18],['course',8],['water',8],['dates',7],['tool',6],['outfit',6],['gadget',4],['treat',6],['acc',3],['charm',2],['pebbles',4]];
+const ITEM_TABLE=[['drink',22],['tip',18],['course',8],['water',8],['dates',10],['tool',6],['outfit',6],['gadget',4],['treat',6],['acc',3],['charm',2],['pebbles',4],['maamoul',3]];
 function randomItemKey(){return wpick(catWeights(wpick(ITEM_TABLE)));}
 function makeItem(k){
  const d=IT[k];const it={id:G.nextId++,k,x:0,y:0,q:1};
  switch(d.cat){
-  case 'tool':case 'outfit':it.ench=wpick([[-1,2],[0,5],[1,3],[2,1.5],[3,.5]]);it.known=false;it.hits=0;it.wear=0;break;
+  case 'tool':case 'outfit':it.ench=wpick([[-1,2],[0,5],[1,3],[2,1.5],[3,.5]]);it.known=false;it.hits=0;it.wear=0;if(chance(.15))it.rn=pick(runesFor(d.cat));break;
   case 'gadget':it.pw=1;it.mx=d.max;it.c=d.max;it.rt=0;break;
   case 'treat':it.c=k==='dogtreats'?ri(2,3):ri(3,5);break;
   case 'acc':it.pw=wpick([[1,5],[2,3],[3,1]]);break;
@@ -432,50 +483,47 @@ function blob(t,tile,n,onto){
 }
 function border(lv){for(let x=0;x<W;x++){lv.t[idx(x,0)]=T.WALL;lv.t[idx(x,H-1)]=T.WALL;}for(let y=0;y<H;y++){lv.t[idx(0,y)]=T.WALL;lv.t[idx(W-1,y)]=T.WALL;}}
 
-function genRooms(lv,z){
- const t=lv.t;t.fill(T.WALL);const rooms=[];const big=!!z.big;
- for(let a=0;a<600&&rooms.length<(big?11:14);a++){
-  const w=ri(4,big?15:11),h=ri(3,big?8:6),x=ri(1,W-w-1),y=ri(1,H-h-1);
-  if(rooms.some(r=>x<r.x+r.w+1&&x+w+1>r.x&&y<r.y+r.h+1&&y+h+1>r.y))continue;
-  rooms.push({x,y,w,h});
-  for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)t[idx(xx,yy)]=T.FLOOR;
+// The Neighborhood: a street grid of lots. Most are walled houses with a hosh (courtyard),
+// plus Friday-market rows, parking lots and a co-op.
+function genCity(lv,z){
+ const t=lv.t;t.fill(T.FLOOR);const lots=[];
+ for(let y=2;y<H-6;){const bh=ri(6,8);if(y+bh>H-2)break;
+  for(let x=2;x<W-8;){const bw=ri(10,16);if(x+bw>W-2)break;lots.push({x,y,w:bw,h:bh});x+=bw+ri(2,3);}
+  y+=bh+2;}
+ const rect=(l,edge,fill)=>{for(let y=l.y;y<l.y+l.h;y++)for(let x=l.x;x<l.x+l.w;x++){const e=x===l.x||y===l.y||x===l.x+l.w-1||y===l.y+l.h-1;t[idx(x,y)]=e?edge:fill;}};
+ const door=(l,side)=>{const cx=l.x+(l.w>>1),cy=l.y+(l.h>>1);
+  if(side===0)t[idx(cx,l.y)]=T.DOOR;else if(side===1)t[idx(cx,l.y+l.h-1)]=T.DOOR;else if(side===2)t[idx(l.x,cy)]=T.DOOR;else t[idx(l.x+l.w-1,cy)]=T.DOOR;};
+ for(const l of lots){const r=rand();
+  if(r<.58){rect(l,T.WALL,T.TILE);
+   const hx0=l.x+2,hx1=l.x+l.w-3,hy0=l.y+2,hy1=l.y+l.h-3;
+   if(hx1-hx0>=2&&hy1-hy0>=1){for(let y=hy0;y<=hy1;y++)for(let x=hx0;x<=hx1;x++)t[idx(x,y)]=chance(.8)?T.GRASS:T.TILE;
+    t[idx((hx0+hx1)>>1,(hy0+hy1)>>1)]=T.PALM;}
+   if(l.w>=13){const wx=l.x+3;for(let y=l.y+1;y<l.y+l.h-1;y++)t[idx(wx,y)]=T.WALL;t[idx(wx,l.y+(l.h>>1))]=T.DOOR;}
+   door(l,ri(0,1));if(chance(.4))door(l,ri(2,3));}
+  else if(r<.73){for(let y=l.y+1;y<l.y+l.h-1;y+=2)for(let x=l.x+1;x<l.x+l.w-1;x+=2)t[idx(x,y)]=T.STALL;}
+  else if(r<.87){for(let y=l.y+1;y<l.y+l.h-1;y+=2)for(let x=l.x;x<l.x+l.w;x++)if((x-l.x)%4!==3)t[idx(x,y)]=T.CAR;}
+  else{rect(l,T.WALL,T.TILE);for(let y=l.y+2;y<l.y+l.h-2;y+=2)for(let x=l.x+2;x<l.x+l.w-2;x++)if((x-l.x)%5!==0)t[idx(x,y)]=T.SHELF;door(l,0);door(l,1);}
  }
- rooms.sort((a,b)=>(a.x+a.w/2)-(b.x+b.w/2));
- const rid=new Int16Array(N).fill(-1);
- rooms.forEach((r,k)=>{for(let yy=r.y;yy<r.y+r.h;yy++)for(let xx=r.x;xx<r.x+r.w;xx++)rid[idx(xx,yy)]=k;});
- const cen=r=>[ri(r.x,r.x+r.w-1),ri(r.y,r.y+r.h-1)];
- const dig=(a,b)=>{let[x,y]=a;const[bx,by]=b;const carve=()=>{if(t[idx(x,y)]===T.WALL)t[idx(x,y)]=T.FLOOR;};
-  if(chance(.5)){while(x!==bx){carve();x+=Math.sign(bx-x);}while(y!==by){carve();y+=Math.sign(by-y);}}
-  else{while(y!==by){carve();y+=Math.sign(by-y);}while(x!==bx){carve();x+=Math.sign(bx-x);}}carve();};
- for(let i=0;i<rooms.length-1;i++)dig(cen(rooms[i]),cen(rooms[i+1]));
- for(let k=0;k<3;k++){const a=pick(rooms),b=pick(rooms);if(a!==b)dig(cen(a),cen(b));}
- for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){
-  const i=idx(x,y);if(t[i]!==T.FLOOR||rid[i]>=0)continue;
-  const L_=t[idx(x-1,y)],R_=t[idx(x+1,y)],U_=t[idx(x,y-1)],D_=t[idx(x,y+1)];
-  const hor=L_===T.WALL&&R_===T.WALL&&U_!==T.WALL&&D_!==T.WALL;
-  const ver=U_===T.WALL&&D_===T.WALL&&L_!==T.WALL&&R_!==T.WALL;
-  if(!hor&&!ver)continue;
-  const nb=hor?(rid[idx(x,y-1)]>=0||rid[idx(x,y+1)]>=0):(rid[idx(x-1,y)]>=0||rid[idx(x+1,y)]>=0);
-  if(!nb)continue;
-  if([L_,R_,U_,D_].includes(T.DOOR))continue;
-  if(chance(.6))t[i]=T.DOOR;
- }
- for(const r of rooms)decorateRoom(lv,z,r);
+ for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const i=idx(x,y);if(t[i]!==T.FLOOR||!chance(.05))continue;
+  const byWall=DIR4.some(([dx,dy])=>t[idx(x+dx,y+dy)]===T.WALL);const nearDoor=DIRS.some(([dx,dy])=>t[idx(x+dx,y+dy)]===T.DOOR);
+  if(byWall&&!nearDoor)t[i]=T.CAR;}
 }
-function decorateRoom(lv,z,r){
- const t=lv.t;const x0=r.x+1,x1=r.x+r.w-2,y0=r.y+1,y1=r.y+r.h-2;
- if(x1<x0||y1<y0)return;
- const roll=rand();
- const set=(x,y,v)=>{if(t[idx(x,y)]===T.FLOOR)t[idx(x,y)]=v;};
- if(z.id===0){
-  if(roll<.22&&x1-x0>=3){for(let y=y0;y<=y1;y+=2)for(let x=x0;x<=x1;x++)if((x-x0)%4!==3)set(x,y,T.CAR);}
-  else if(roll<.40){for(let y=y0;y<=y1;y+=2)for(let x=x0;x<=x1;x+=2)set(x,y,T.STALL);}
-  else if(roll<.55){for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++)if(chance(.7))set(x,y,T.GRASS);if(x1-x0>=2&&y1-y0>=2)set((x0+x1)>>1,(y0+y1)>>1,T.PALM);}
- }else if(z.id===1){
-  if(roll<.35){for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(!chance(.2))continue;if(DIR4.some(([dx,dy])=>t[idx(x+dx,y+dy)]===T.SCRAP))continue;set(x,y,T.SCRAP);}}
-  else if(roll<.6){let x=ri(x0,x1),y=ri(y0,y1);for(let s=0;s<ri(6,16);s++){set(x,y,T.OIL);const d=pick(DIR4);x=clamp(x+d[0],x0,x1);y=clamp(y+d[1],y0,y1);}}
-  else if(roll<.75){for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(chance(.1)&&!DIR4.some(([dx,dy])=>t[idx(x+dx,y+dy)]===T.CAR))set(x,y,T.CAR);}}
- }
+// Shuwaikh: open yards with warehouses, rows of stacked containers, scrap and oil.
+function genYard(lv,z){
+ const t=lv.t;t.fill(T.FLOOR);
+ const nw=ri(3,5);
+ for(let k=0;k<nw;k++){const w=ri(10,18),h=ri(6,9),x0=ri(2,W-w-2),y0=ri(2,H-h-2);
+  for(let y=y0;y<y0+h;y++)for(let x=x0;x<x0+w;x++){const e=x===x0||y===y0||x===x0+w-1||y===y0+h-1;t[idx(x,y)]=e?T.WALL:T.FLOOR;}
+  const gaps=ri(2,3);for(let g=0;g<gaps;g++){const s=ri(0,3);
+   if(s<2){const gx=ri(x0+2,x0+w-4),gy=s===0?y0:y0+h-1;t[idx(gx,gy)]=T.FLOOR;t[idx(gx+1,gy)]=T.FLOOR;}
+   else{const gy=ri(y0+2,y0+h-3),gx=s===2?x0:x0+w-1;t[idx(gx,gy)]=T.DOOR;}}
+  for(let y=y0+2;y<y0+h-2;y++)for(let x=x0+2;x<x0+w-2;x++){const r=rand();if(r<.08)t[idx(x,y)]=T.SCRAP;else if(r<.12)t[idx(x,y)]=T.OIL;else if(r<.15)t[idx(x,y)]=T.CAR;}}
+ const nc=ri(4,7);
+ for(let k=0;k<nc;k++){const len=ri(4,9),x0=ri(2,W-len-2),y0=ri(2,H-4),rows=chance(.5)?2:1;
+  for(let r=0;r<rows;r++)for(let x=x0;x<x0+len;x++){const i=idx(x,y0+r);if(t[i]===T.FLOOR)t[i]=T.CONT;}}
+ for(let k=0;k<5;k++)blob(t,T.SCRAP,ri(4,10),[T.FLOOR]);
+ for(let k=0;k<4;k++)blob(t,T.OIL,ri(5,14),[T.FLOOR]);
+ for(let k=0;k<3;k++){const len=ri(6,14),x0=ri(2,W-len-2),y=ri(2,H-3);for(let x=x0;x<x0+len;x++)if(t[idx(x,y)]===T.FLOOR&&(x-x0)%7!==3)t[idx(x,y)]=T.FENCE;}
 }
 function genFarm(lv,z){
  const t=lv.t;t.fill(T.FLOOR);lv._pens=[];
@@ -535,17 +583,28 @@ function diagBlockedT(t,x0,y0,x1,y1){
  if(TD[t[idx(x0,y0)]].door||TD[t[idx(x1,y1)]].door)return true;
  return false;
 }
+// Stairs go in open spots, never in a one-tile gap: stepping on them changes depth,
+// so a staircase in a chokepoint would cut off the rest of the level.
 function placeStairs(lv,depth){
- const t=lv.t;const c=[];for(let i=0;i<N;i++)if(FLOORLIKE.has(t[i]))c.push(i);
- const u=pick(c);t[u]=depth===1?T.HOME:T.UP;lv.up=[u%W,(u/W)|0];
- if(depth<MAXD){const d=bfsT(t,[u],i=>TD[t[i]].pass);let mx=0;for(const i of c)if(d[i]<32767&&d[i]>mx)mx=d[i];
-  const far=c.filter(i=>d[i]<32767&&d[i]>=mx*.8&&i!==u);const dn=pick(far.length?far:c.filter(i=>i!==u));t[dn]=T.DOWN;lv.down=[dn%W,(dn/W)|0];}
+ const t=lv.t;const all=[];for(let i=0;i<N;i++)if(FLOORLIKE.has(t[i]))all.push(i);
+ const open=i=>{const x=i%W,y=(i/W)|0;let n=0;for(const[dx,dy]of DIRS)if(TD[t[idx(x+dx,y+dy)]].pass)n++;return n;};
+ const c=all.filter(i=>open(i)>=7);const pool=c.length>10?c:all;
+ const cutsOff=(stairs)=>{const start=all.find(i=>!stairs.includes(i));const d=bfsT(t,[start],i=>TD[t[i]].pass&&!stairs.includes(i));return all.some(i=>!stairs.includes(i)&&d[i]>=32767);};
+ for(let attempt=0;attempt<40;attempt++){
+  const u=pick(pool);let dn=-1;
+  if(depth<MAXD){const d=bfsT(t,[u],i=>TD[t[i]].pass);let mx=0;for(const i of pool)if(d[i]<32767&&d[i]>mx)mx=d[i];
+   const far=pool.filter(i=>d[i]<32767&&d[i]>=mx*.8&&i!==u);dn=pick(far.length?far:pool.filter(i=>i!==u));}
+  if(attempt<39&&cutsOff(dn>=0?[u,dn]:[u]))continue;
+  t[u]=depth===1?T.HOME:T.UP;lv.up=[u%W,(u/W)|0];
+  if(dn>=0){t[dn]=T.DOWN;lv.down=[dn%W,(dn/W)|0];}
+  return;
+ }
 }
 function vaultOffers(depth){
  const mk=k=>makeItem(k);
  const opts=[
-  ()=>{const it=mk(wpick(catWeights('tool')));it.ench=ri(2,3);it.known=true;return it;},
-  ()=>{const it=mk(wpick(catWeights('outfit')));it.ench=ri(2,3);it.known=true;return it;},
+  ()=>{const it=mk(wpick(catWeights('tool')));it.ench=ri(2,3);it.known=true;if(chance(.6))it.rn=pick(runesFor('tool'));return it;},
+  ()=>{const it=mk(wpick(catWeights('outfit')));it.ench=ri(2,3);it.known=true;if(chance(.6))it.rn=pick(runesFor('outfit'));return it;},
   ()=>{const it=mk(wpick(catWeights('gadget')));it.pw=2;it.mx+=1;it.c=it.mx;return it;},
   ()=>{const it=mk(wpick(catWeights('acc')));it.pw=ri(2,3);return it;},
   ()=>{const it=mk(wpick(catWeights('charm')));it.pw=2;return it;},
@@ -562,7 +621,9 @@ function stampVault(lv,depth,z){
   for(let y=y0-1;y<=y0+5&&ok;y++)for(let x=x0-1;x<=x0+7;x++)if(!want(t[idx(x,y)])){ok=false;break;}
   if(!ok)continue;
   for(let y=y0;y<y0+5;y++)for(let x=x0;x<x0+7;x++){const edge=x===x0||y===y0||x===x0+6||y===y0+4;t[idx(x,y)]=edge?T.WALL:fl;}
-  t[idx(x0+3,chance(.5)?y0:y0+4)]=T.DOOR;
+  const doorY=chance(.5)?y0:y0+4;t[idx(x0+3,doorY)]=T.DOOR;
+  // A deal room carved into solid rock gets a straight passage out of its door.
+  if(a>=300){const dir=doorY===y0?-1:1;for(let y=doorY+dir;y>0&&y<H-1;y+=dir){const i=idx(x0+3,y);if(TD[t[i]].pass)break;t[i]=fl;}}
   const gid=G.nextId++;const offers=vaultOffers(depth);
   [[x0+1,y0+2],[x0+3,y0+2],[x0+5,y0+2]].forEach(([px,py],k)=>{t[idx(px,py)]=T.PED;const it=offers[k];it.x=px;it.y=py;it.vault=gid;lv.items.push(it);});
   lv.vaultRect=[x0,y0];return;
@@ -575,6 +636,7 @@ function makeMon(k,x,y,depth){
  if(t.kind==='livestock'||t.kind==='critter')state='neutral';
  else if(t.kind==='captive')state='captive';
  else if(t.kind==='summon')state='ally';
+ else if(t.kind==='npc')state='npc';
  else state=t.ambush?(chance(.9)?'sleep':'wander'):(chance(.55)?'sleep':'wander');
  return{id:G.nextId++,k,x,y,hp,maxHp:hp,state,next:P?P.next:0,stun:0,fear:0,carry:0,food:0,lost:0,timer:0};
 }
@@ -605,9 +667,9 @@ function populate(lv,depth,z){
  for(let k=0;k<n;k++)keys.push(randomItemKey());
  if(chance(.85))keys.push(chance(.55)?'water':'dates');
  if(zoneOf(depth).heat>1.3&&chance(.6))keys.push('water');
- G.lifeDebt+=.22;if(rand()<G.lifeDebt){keys.push('machboos');G.lifeDebt-=1;}
+ G.lifeDebt+=.26;if(rand()<G.lifeDebt){keys.push('machboos');G.lifeDebt-=1;}
  G.strDebt+=.3;if(rand()<G.strDebt){keys.push('protein');G.strDebt-=1;}
- if([10,11,15,16].includes(depth))keys.push('barley');
+ if(z.id===2||z.id===3)keys.push('dates','dates');
  if(depth===3||depth===14)keys.push('dogtreats');
  for(const k of keys)put(makeItem(k));
  const groups=3+Math.floor(depth/4)+ri(0,2);
@@ -628,11 +690,13 @@ function genLevel(depth){
  const prev=curRng;curRng=mix32((Math.imul(G.seed,2654435761)^Math.imul(depth,40503))>>>0);
  const z=zoneOf(depth);
  const lv={depth,t:new Uint8Array(N),known:new Uint8Array(N),fire:new Uint8Array(N),dust:new Float32Array(N),items:[],mons:[],up:null,down:null};
- if(z.gen==='rooms')genRooms(lv,z);else if(z.gen==='farm')genFarm(lv,z);else genCave(lv,z);
+ if(z.gen==='city')genCity(lv,z);else if(z.gen==='yard')genYard(lv,z);else if(z.gen==='farm')genFarm(lv,z);else genCave(lv,z);
  border(lv);connect(lv,z);
  placeStairs(lv,depth);
  if(depth>=2&&chance(.45))stampVault(lv,depth,z);
  connect(lv,z);
+ if(HUBS[depth]){const s=nearFree(lv,idx(...lv.up),1,new Set())[0]??nearFree(lv,idx(...lv.up),3,new Set())[0];
+  if(s!==undefined){const m=makeMon('trader',s%W,(s/W)|0,depth);m.title=HUBS[depth];lv.mons.push(m);}}
  populate(lv,depth,z);
  delete lv._pens;
  curRng=prev;return lv;
@@ -645,6 +709,8 @@ const monAt=(x,y)=>L.mons.find(m=>m.x===x&&m.y===y);
 const tileAt=(x,y)=>L.t[idx(x,y)];
 const isHostile=m=>m.state==='sleep'||m.state==='wander'||m.state==='hunt'||m.state==='flee';
 const isFriend=m=>m.state==='ally'||m.state==='herd';
+// Hidden animals (vipers, scorpions) can't be seen while they lie in wait unless you're right next to them.
+const canSee=m=>!!vis[idx(m.x,m.y)]&&!(MT[m.k].hidden&&m.state==='sleep'&&cheb(m.x,m.y,P.x,P.y)>2);
 const diagBlocked=(x0,y0,x1,y1)=>diagBlockedT(L.t,x0,y0,x1,y1);
 function opaqueAt(x,y){const i=idx(x,y);const d=TD[L.t[i]];if(L.dust[i]>=25)return true;if(d.door)return!(monAt(x,y)||(P.x===x&&P.y===y));return d.opaque;}
 const monPass=i=>TD[L.t[i]].pass&&!L.fire[i];
@@ -653,16 +719,37 @@ function eqItem(slot){const id=P.eq[slot];return id?P.inv.find(i=>i.id===id)||nu
 function isEquipped(it){return Object.values(P.eq).includes(it.id);}
 function accPow(k){let s=0;for(const sl of['acc1','acc2']){const it=eqItem(sl);if(it&&it.k===k)s+=it.pw;}return s;}
 function strPen(it){return it?Math.max(0,(IT[it.k].str||0)-P.str):0;}
-function playerAcc(){const t=eqItem('tool');return 100*Math.pow(1.065,t?t.ench:0)-strPen(t)*4;}
+function rune(slot){const it=eqItem(slot);return it&&it.rn?it.rn:null;}
+function revealRune(slot){const it=eqItem(slot);if(it&&it.rn&&!it.rk){it.rk=true;msg(`Your ${IT[it.k].name} is ${RUNES[it.rn].name}! ${RUNES[it.rn].desc}`,'good');}}
+function playerAcc(){const t=eqItem('tool');return 100*Math.pow(1.065,t?t.ench:0)-strPen(t)*4+(rune('tool')==='sure'?30:0);}
 function playerArmor(){const o=eqItem('outfit');if(!o)return 0;return Math.max(0,(IT[o.k].armor+o.ench-strPen(o))*10);}
 function shownArmor(){const o=eqItem('outfit');if(!o)return'0';const v=IT[o.k].armor+(o.known?o.ench:0)-strPen(o);return o.known?String(Math.max(0,v)):Math.max(0,v)+'?';}
 function stealthRange(){let r=P.rested?7:14;r-=2*accPow('sandals');return Math.max(2,r);}
 function visRadius(){return zoneOf(G.depth).vis;}
-function netWorth(){let v=P.dinars;for(const d in G.levels)for(const m of G.levels[d].mons)if(isFriend(m))v+=MT[m.k].value||0;return v;}
+// Net worth: cash in your pocket, money in the bank, and the animals that are here with you.
+const herdValue=()=>L.mons.reduce((s,m)=>s+(isFriend(m)?(MT[m.k].value||0):0),0);
+function netWorth(){return P.dinars+(G.bank||0)+herdValue();}
 function hitPct(acc,def){return clamp(Math.round(acc*Math.pow(.986,def)),0,100);}
 
 // ================= MESSAGES =================
 function msg(t,c=''){G.msgs.push({t,c,n:G.turn,id:G.msgSeq=(G.msgSeq||0)+1});if(G.msgs.length>80)G.msgs.shift();if(c==='bad'||c==='warn')interrupt=true;}
+
+// ================= FEEDBACK: flashes, trails, shake, sound =================
+const fx=[];let fxReq=0;let SIM=false;
+const reduceMotion=()=>window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function flash(x,y,col,dur=200,delay=0){if(SIM)return;fx.push({x,y,col,t0:performance.now()+delay,dur});if(!fxReq)fxReq=requestAnimationFrame(fxLoop);}
+function trail(path,col){path.forEach((p,i)=>flash(p[0],p[1],col,170,i*30));}
+function fxLoop(){fxReq=0;const now=performance.now();for(let i=fx.length-1;i>=0;i--)if(now>fx[i].t0+fx[i].dur)fx.splice(i,1);render();if(fx.length)fxReq=requestAnimationFrame(fxLoop);}
+function shake(){if(SIM||reduceMotion()||!cv.animate)return;cv.animate([{transform:'translate(0,0)'},{transform:'translate(-4px,2px)'},{transform:'translate(4px,-2px)'},{transform:'translate(-2px,1px)'},{transform:'translate(0,0)'}],{duration:200});}
+const SND={on:true};let actx=null;
+try{SND.on=localStorage.getItem('rizq-sound')!=='off';}catch(e){}
+const SOUNDS={hit:[[200,.06,'square']],miss:[[140,.04,'triangle']],hurt:[[120,.14,'sawtooth']],coin:[[880,.06,'triangle'],[1320,.09,'triangle']],tame:[[523,.1,'sine'],[784,.16,'sine']],boom:[[70,.3,'sawtooth']],buy:[[660,.06,'triangle'],[990,.08,'triangle']],howl:[[300,.5,'sine']],step:null};
+function sfx(kind){
+ if(SIM||!SND.on)return;const notes=SOUNDS[kind];if(!notes)return;
+ try{if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();let t=actx.currentTime;
+  for(const[f,d,w]of notes){const o=actx.createOscillator(),g=actx.createGain();o.type=w;o.frequency.setValueAtTime(f,t);if(kind==='howl')o.frequency.linearRampToValueAtTime(f*1.6,t+d);
+   g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+d);t+=d*.8;}}catch(e){}
+}
 
 // ================= FOV =================
 const MULT=[[1,0,0,-1,-1,0,0,1],[0,1,-1,0,0,-1,1,0],[0,1,1,0,0,-1,-1,0],[1,0,0,1,-1,0,0,-1]];
@@ -690,15 +777,15 @@ function castLight(cx,cy,row,start,end,radius,xx,xy,yx,yy){
 }
 
 // ================= NEW GAME / LEVELS =================
-function newGame(seed){
- G={v:1,seed:seed>>>0,rs:(seed^0x9e3779b9)>>>0,turn:0,depth:1,levels:{},nextId:1,msgs:[],msgSeq:0,known:{},app:{},stats:{deepest:1,driven:0,tamed:0},over:null,lifeDebt:.25,strDebt:.2,envNext:100,zonesSeen:{}};
+function newGame(seed,daily){
+ G={v:2,seed:seed>>>0,rs:(seed^0x9e3779b9)>>>0,turn:0,depth:1,levels:{},nextId:1,msgs:[],msgSeq:0,known:{},app:{},stats:{deepest:1,driven:0,tamed:0,sold:0},over:null,lifeDebt:.25,strDebt:.2,envNext:100,zonesSeen:{},bank:0,daily:daily||null,herdStay:false};
  curRng=gameRng;
  const da=shuffle(DRINK_APPS.slice());DRINKS.forEach((k,i)=>G.app[k]=da[i]);
  const ta=shuffle(TIP_APPS.slice());TIPS.forEach((k,i)=>G.app[k]=ta[i]);
  P={x:0,y:0,hp:40,maxHp:40,str:12,thirst:THIRST_MAX,dinars:0,inv:[],eq:{tool:null,outfit:null,acc1:null,acc2:null},st:{},next:0,poison:0,rg:0,rested:false};
  const add=(k,o)=>{const it=Object.assign(makeItem(k),o||{});addInv(it);return it;};
- P.eq.tool=add('stick',{ench:0,known:true}).id;
- P.eq.outfit=add('dishdasha',{ench:0,known:true}).id;
+ P.eq.tool=add('stick',{ench:0,known:true,rn:null}).id;
+ P.eq.outfit=add('dishdasha',{ench:0,known:true,rn:null}).id;
  add('water',{q:2});add('dates',{q:3});add('pebbles',{q:8});add('flashlight');add('chai');
  G.levels[1]=genLevel(1);L=G.levels[1];
  P.x=L.up[0];P.y=L.up[1];G.zonesSeen[0]=1;
@@ -706,26 +793,37 @@ function newGame(seed){
  msg('Goal: 100,000 KD net worth, then come back through your front door ⌂. Press ? for help.');
  afterTurn(true);
 }
-function changeLevel(dir){
- const to=G.depth+dir;if(to<1||to>MAXD)return;
- const fol=L.mons.filter(m=>isFriend(m)&&distP[idx(m.x,m.y)]<=12);
+function changeLevel(dir){const to=G.depth+dir;if(to<1||to>MAXD)return;goToLevel(to,dir>0?'up':'down',dir);}
+// Move to another depth. `arrive` is where you appear: at its way back ('up'), its way onward ('down'), or beside your front door ('home').
+function goToLevel(to,arrive,dir){
+ // Friends always come along; the herd comes unless you told it to stay. A ride home takes everyone with you.
+ const near=m=>arrive==='home'||distP[idx(m.x,m.y)]<=12;
+ const fol=L.mons.filter(m=>near(m)&&(m.state==='ally'||(m.state==='herd'&&(!G.herdStay||arrive==='home'))));
+ const left=L.mons.filter(m=>m.state==='herd'&&!fol.includes(m)).length;
  L.mons=L.mons.filter(m=>!fol.includes(m));
  G.depth=to;
  if(!G.levels[to])G.levels[to]=genLevel(to);
  L=G.levels[to];wanderCache.clear();
- const[sx,sy]=dir>0?L.up:L.down;P.x=sx;P.y=sy;
- const taken=new Set(L.mons.map(m=>idx(m.x,m.y)));taken.add(idx(sx,sy));
+ const anchor=arrive==='up'?L.up:arrive==='down'?L.down:L.up;
+ let[sx,sy]=anchor;
+ const taken=new Set(L.mons.map(m=>idx(m.x,m.y)));
+ if(arrive==='home'){const s=nearFree(L,idx(sx,sy),2,taken)[0];if(s!==undefined){sx=s%W;sy=(s/W)|0;}}
+ P.x=sx;P.y=sy;taken.add(idx(sx,sy));
  const spots=nearFree(L,idx(sx,sy),6,taken);
  for(const m of fol){const s=spots.shift();if(s===undefined)break;m.x=s%W;m.y=(s/W)|0;L.mons.push(m);}
  for(const m of L.mons)m.next=Math.max(m.next,P.next);
  G.stats.deepest=Math.max(G.stats.deepest,to);
  const z=zoneOf(to);
- if(!G.zonesSeen[z.id]){G.zonesSeen[z.id]=1;msg(z.arrive,'gold');}
+ if(arrive==='home')msg('The pickup truck drops you off outside your house. Your front door ⌂ is right there.','gold');
+ else if(!G.zonesSeen[z.id]){G.zonesSeen[z.id]=1;msg(z.arrive,'gold');}
  else msg(dir>0?`You head further out. Depth ${to}.`:`You head back toward home. Depth ${to}.`);
  if(to===MAXD&&dir>0&&!G.saw26){G.saw26=1;msg('This is as far as the road goes. Grab what you can, then head home.','gold');}
+ if(HUBS[to]&&!(G.hubSeen||(G.hubSeen={}))[to]){G.hubSeen[to]=1;msg(`${cap(HUBS[to])} is set up right by the way back. Walk into the trader (@) to buy, sell, bank or get a ride home.`,'gold');}
  if(fol.length)msg(`${fol.length===1?'Your '+MT[fol[0].k].name+' follows':'Your '+fol.length+' animals follow'} you.`);
+ if(left)msg(`${left===1?'One animal stays':left+' animals stay'} behind where you told them to wait. They don’t count toward your net worth until you collect them.`,'warn');
  auto=null;afterTurn(true);save();
 }
+const cap=s=>s[0].toUpperCase()+s.slice(1);
 
 // ================= INVENTORY =================
 const LETTERS='abcdefghijklmnopqrstuvwxyz';
@@ -735,7 +833,7 @@ function addInv(it){
  if(d.cat==='treat'){const ex=P.inv.find(o=>o.k===it.k);if(ex){ex.c+=it.c;return ex;}}
  if(P.inv.length>=26)return null;
  const used=new Set(P.inv.map(o=>o.letter));it.letter=[...LETTERS].find(l=>!used.has(l));
- delete it.vault;delete it.seen;delete it.noauto;
+ delete it.vault;delete it.seen;delete it.noauto;delete it.left;
  P.inv.push(it);return it;
 }
 function removeOne(it){it.q=(it.q||1)-1;if(it.q<=0)removeItem(it);}
@@ -747,7 +845,7 @@ function itemName(it){
  const d=IT[it.k];const q=it.q||1;
  if(d.cat==='drink'||d.cat==='tip'){const ap=G.app[it.k];if(G.known[it.k])return(q>1?q+' × ':'')+d.name;return q>1?`${q} ${ap.pl}`:ap.n;}
  if(STACK.has(d.cat))return q>1?`${q} ${d.plural||d.name+'s'}`:d.name;
- if(d.cat==='tool'||d.cat==='outfit')return(it.known?`${it.ench>=0?'+':''}${it.ench} `:'')+d.name;
+ if(d.cat==='tool'||d.cat==='outfit')return(it.known?`${it.ench>=0?'+':''}${it.ench} `:'')+d.name+(it.rn&&(it.known||it.rk)?` (${RUNES[it.rn].name})`:'');
  if(d.cat==='gadget')return`${d.name} +${it.pw} [${it.c}/${it.mx}]`;
  if(d.cat==='treat')return`${d.name} (${it.c} left)`;
  if(d.cat==='acc')return`${d.name} +${it.pw}`;
@@ -759,9 +857,10 @@ function pickupHere(manual){
  const here=L.items.filter(it=>it.x===P.x&&it.y===P.y&&(manual||!it.noauto));
  if(!here.length){if(manual)msg('There’s nothing here to pick up.');return;}
  for(const it of here){
-  if(it.k==='money'){P.dinars+=it.amt;L.items=L.items.filter(o=>o!==it);msg(`You find ${fmt(it.amt)} KD. Net worth: ${fmt(netWorth())} KD.`,'gold');}
+  if(it.k==='money'){P.dinars+=it.amt;L.items=L.items.filter(o=>o!==it);msg(`You find ${fmt(it.amt)} KD. Net worth: ${fmt(netWorth())} KD.`,'gold');flash(P.x,P.y,[255,214,90],260);sfx('coin');}
   else{const vg=it.vault;const name=aName(it);const r=addInv(it);
-   if(!r){it.noauto=1;msg(`Your bag is full, so you leave ${name} here. Drop something first.`,'warn');continue;}
+   if(!r){if(!it.left||manual)msg(`Your bag is full, so you leave ${name} here. Drop something first.`,'warn');it.left=1;continue;}
+   delete it.left;
    L.items=L.items.filter(o=>o!==it);
    msg(`You pick up ${name} (${r.letter}).`,'good');
    if(vg){const others=L.items.filter(o=>o.vault===vg);if(others.length){L.items=L.items.filter(o=>o.vault!==vg);msg('You take the deal. The other offers are gone.');}}}
@@ -781,11 +880,13 @@ function playerMove(dx,dy){
  if(diagBlocked(P.x,P.y,nx,ny))return false;
  const tt=L.t[idx(nx,ny)];const d=TD[tt];
  if(!d.pass){if(P.st.conf)return false;if(tt===T.CAR)msg('A parked car. Nobody’s moving it today.');else if(tt===T.TENT)msg('Someone’s uncle is in that tent watching football. Better not.');return false;}
- P.rested=false;moveTo(nx,ny,d.slow?200:100);return true;
+ const sandy=rune('outfit')==='sand';
+ if(sandy&&d.slow)revealRune('outfit');
+ P.rested=false;moveTo(nx,ny,d.slow&&!sandy?200:100);return true;
 }
 function moveTo(nx,ny,cost){
  P.x=nx;P.y=ny;const tt=L.t[idx(nx,ny)];
- if(tt===T.SABKHA&&chance(.3)){P.st.stuck=ri(1,2);msg('Your foot sinks into the salty mud of the sabkha.','warn');}
+ if(tt===T.SABKHA&&chance(.3)){if(rune('outfit')==='sand')revealRune('outfit');else{P.st.stuck=ri(1,2);msg('Your foot sinks into the salty mud of the sabkha.','warn');}}
  pickupHere(false);
  if(tt===T.DOWN){changeLevel(1);return;}
  if(tt===T.UP){changeLevel(-1);return;}
@@ -798,15 +899,18 @@ function moveTo(nx,ny,cost){
 }
 function bump(m){
  const t=MT[m.k];
+ if(m.state==='npc'){if(!auto)openShop(m);return;}
  if(isHostile(m)){playerAttack(m);return;}
- if(m.state==='captive'){m.state='ally';m.next=P.next;G.stats.tamed++;msg(`You untie the ${t.name}. It's yours now! (+${fmt(t.value)} KD net worth)`,'gold');endTurn(100);return;}
+ if(m.state==='captive'){m.state='ally';m.next=P.next;G.stats.tamed++;flash(m.x,m.y,[255,214,90],320);sfx('tame');msg(`You untie the ${t.name}. It's yours now! (+${fmt(t.value)} KD net worth)`,'gold');endTurn(100);return;}
  if(m.state==='neutral'&&t.kind==='livestock'){
-  const b=P.inv.find(i=>i.k==='barley');
-  if(b){b.c--;if(b.c<=0){removeItem(b);msg('That was the last of your barley.');}
-   m.state='herd';G.stats.tamed++;msg(`The ${t.name} munches your barley and joins your herd. (+${fmt(t.value)} KD net worth)`,'gold');endTurn(100);return;}
+  const b=P.inv.find(i=>i.k==='dates');const need=t.feed||1;
+  if(b&&!auto){
+   if(b.q<need)msg(`The ${t.name} sniffs your one handful of dates and wants more. (It takes ${need}.)`);
+   else{b.q-=need;if(b.q<=0){removeItem(b);msg('That was the last of your dates.','warn');}
+    m.state='herd';G.stats.tamed++;flash(m.x,m.y,[255,214,90],320);sfx('tame');msg(`The ${t.name} eats the dates from your hand and joins your herd. (+${fmt(t.value)} KD net worth)`,'gold');endTurn(100);return;}}
  }
  if(t.flighty){msg(`The ${t.name} flutters off, offended.`);fleeStep(m);m.state='neutral';endTurn(100);return;}
- if(m.state==='neutral'&&t.kind==='livestock'&&!auto)msg(`You squeeze past the ${t.name}. (Barley would win it over.)`);
+ if(m.state==='neutral'&&t.kind==='livestock'&&!auto)msg(`You squeeze past the ${t.name}. (Dates would win it over.)`);
  const slow=TD[L.t[idx(m.x,m.y)]].slow;
  swapWith(m);P.rested=false;
  const tt=L.t[idx(P.x,P.y)];
@@ -821,28 +925,32 @@ function playerAttack(m){
  if(d.reach){const bx=m.x+(m.x-P.x),by=m.y+(m.y-P.y);const o=inb(bx,by)&&monAt(bx,by);if(o&&isHostile(o))targets.push(o);}
  for(const o of targets)attackOne(o,tool,d);
  for(const o of L.mons)if(o.state==='sleep'&&cheb(o.x,o.y,P.x,P.y)<=5&&chance(.25))o.state='hunt';
- P.rested=false;endTurn(d.slow?200:100);
+ let cost=d.slow?200:100;if(rune('tool')==='quick'){cost/=2;revealRune('tool');}
+ P.rested=false;endTurn(cost);
 }
 function attackOne(m,tool,d){
  const t=MT[m.k];const sneak=m.state==='sleep'||m.state==='wander'||m.stun>0;
  const hit=sneak||chance(hitPct(playerAcc(),t.def)/100);
- if(!hit){msg(`You miss the ${t.name}.`);if(m.state!=='flee')m.state='hunt';return;}
+ if(t.swarm)for(const o of L.mons)if(MT[o.k].swarm&&isHostile(o)&&cheb(o.x,o.y,m.x,m.y)<=8)o.state='hunt';
+ if(!hit){msg(`You miss the ${t.name}.`);sfx('miss');if(m.state!=='flee')m.state='hunt';return;}
  let dmg=(ri(d.dmg[0],d.dmg[1]))*Math.pow(1.065,(tool?tool.ench:0)-strPen(tool));
  if(sneak)dmg*=3;dmg=Math.max(1,Math.round(dmg));
- m.hp-=dmg;
- if(tool&&!tool.known){tool.hits++;if(tool.hits>=20){tool.known=true;msg(`You've got the feel of your ${IT[tool.k].name} now: it's ${tool.ench>=0?'+':''}${tool.ench}.`,'good');}}
- if(m.hp<=0){driveOff(m,sneak?`You catch the ${t.name} off guard!`:null);return;}
+ m.hp-=dmg;flash(m.x,m.y,[255,250,235],170);sfx('hit');
+ if(tool&&!tool.known){tool.hits++;if(tool.hits>=20){tool.known=true;msg(`You've got the feel of your ${IT[tool.k].name} now: it's ${tool.ench>=0?'+':''}${tool.ench}${tool.rn?` and ${RUNES[tool.rn].name}`:''}.`,'good');}}
+ if(m.hp<=0){driveOff(m,sneak?`You catch the ${t.name} off guard!`:null,true);return;}
  msg(sneak?`You catch the ${t.name} off guard and ${d.verb} it hard!`:`You ${d.verb} the ${t.name}.`);
+ if(rune('tool')==='stun'&&chance(.25)){m.stun=Math.max(m.stun,2);revealRune('tool');msg(`The ${t.name} is dazed.`);}
  if(m.state!=='flee')m.state='hunt';
  if(t.fleeAt&&m.hp<m.maxHp*t.fleeAt)m.state='flee';
 }
-function driveOff(m,pre){
+function driveOff(m,pre,byPlayer){
  const t=MT[m.k];
  L.mons=L.mons.filter(o=>o!==m);wanderCache.delete(m.id);
  if(m.carry){const it=moneyItem(m.carry);it.x=m.x;it.y=m.y;L.items.push(it);}
  if(m.food){const it=makeItem('dates');it.q=m.food;it.x=m.x;it.y=m.y;L.items.push(it);}
  if(m.state==='herd'||m.state==='ally'){msg(`Your ${t.name} panics and runs off for good!`,'bad');return;}
  G.stats.driven++;
+ if(byPlayer&&rune('tool')==='fortune'&&chance(.4)){const it=moneyItem(ri(5,15)*G.depth);it.x=m.x;it.y=m.y;it.seen=1;L.items.push(it);revealRune('tool');}
  const seen=vis[idx(m.x,m.y)];
  if(seen)msg(`${pre?pre+' ':''}The ${t.name} ${t.off||'runs off and won’t be back.'}${m.carry?' It drops your money!':''}`,'good');
  for(const a of L.mons)if(a.state==='ally'&&cheb(a.x,a.y,m.x,m.y)<=2&&!a.temp){a.maxHp+=2;a.hp+=2;}
@@ -859,12 +967,11 @@ function useItem(it){
   case 'water':removeOne(it);P.thirst=THIRST_MAX;msg('You drink the whole bottle. Ahh, cold water.','good');return endTurn(100);
   case 'dates':removeOne(it);P.thirst=Math.min(THIRST_MAX,P.thirst+700);P.hp=Math.min(P.maxHp,P.hp+3);msg('You eat a handful of dates. Sweet and sticky.','good');return endTurn(100);
   case 'machboos':removeOne(it);P.maxHp+=10;P.hp=P.maxHp;P.poison=0;msg("Mom's machboos, still warm in its foil. You feel loved. (+10 max energy)",'gold');return endTurn(100);
+  case 'gift':removeOne(it);P.hp=Math.min(P.maxHp,P.hp+8);P.thirst=Math.min(THIRST_MAX,P.thirst+150);msg('You eat the ma’amoul yourself. No regrets.','good');return endTurn(100);
   case 'protein':removeOne(it);P.str++;msg(`You chug the protein shake. Fitness ${P.str}. Your gym friend would be proud.`,'gold');return endTurn(100);
   case 'tool':case 'outfit':case 'acc':return toggleEquip(it);
   case 'gadget':return useGadget(it);
-  case 'treat':
-   if(it.k==='barley'){msg('Walk into a sheep, goat or camel to win it over with barley.');return;}
-   return throwTreat(it);
+  case 'treat':return throwTreat(it);
   case 'charm':return useCharm(it);
   case 'pebbles':return throwPebble(it);
  }
@@ -906,7 +1013,7 @@ function takeCourse(it){
  if(!P.inv.some(canImprove)){msg('You have nothing to improve.');return;}
  openInv({mode:'select',title:'Which item does this course improve?',filter:canImprove,onPick:x=>{
   const d=IT[x.k];removeOne(it);
-  switch(d.cat){case 'tool':case 'outfit':x.ench++;break;case 'gadget':x.pw++;x.mx++;x.c++;break;case 'acc':case 'charm':x.pw++;break;case 'treat':x.c+=x.k==='barley'?2:1;break;}
+  switch(d.cat){case 'tool':case 'outfit':x.ench++;break;case 'gadget':x.pw++;x.mx++;x.c++;break;case 'acc':case 'charm':x.pw++;break;case 'treat':x.c+=1;break;}
   msg(`You finish “${pick(COURSES)}.” Your ${d.name} is better now.`,'gold');endTurn(100);}});
 }
 function toggleEquip(it){
@@ -928,7 +1035,7 @@ function useGadget(it){
  const d=IT[it.k];
  if(it.c<=0){msg(`Your ${d.name} is out of battery. It recharges over time.`,'warn');return;}
  if(it.k==='flashlight'){
-  startTarget(`Dazzle which animal?`,10,(x,y)=>{const path=boltPath(P.x,P.y,x,y,10);const last=path[path.length-1];const m=last&&monAt(last[0],last[1]);it.c--;
+  startTarget(`Dazzle which animal?`,10,(x,y)=>{const path=boltPath(P.x,P.y,x,y,10);trail(path,[255,246,190]);const last=path[path.length-1];const m=last&&monAt(last[0],last[1]);it.c--;
    if(m){m.stun=3+2*it.pw;msg(`You blast the ${MT[m.k].name} with your flashlight. It’s dazzled!`,'good');}else msg('The beam hits nothing.');endTurn(100);});return;
  }
  it.c--;
@@ -936,10 +1043,12 @@ function useGadget(it){
   msg(`HOOOOONK. ${n?'Everything nearby scatters!':'The whole neighborhood heard that.'}`,'good');}
  else if(it.k==='cousin'){const sp=nearFree(L,idx(P.x,P.y),2,new Set(L.mons.map(m=>idx(m.x,m.y))));
   if(!sp.length){it.c++;msg('There’s no room for your cousin to stand.');return;}
-  const s=sp[0];const m=makeMon('cousin',s%W,(s/W)|0,G.depth);m.maxHp=m.hp=30+10*it.pw;m.temp=true;m.timer=20+10*it.pw;m.pw=it.pw;L.mons.push(m);
-  msg('You call your cousin. He said “five minutes,” and somehow he actually shows up.','good');}
+  const n=it.pw>=3&&sp.length>1?2:1;
+  for(let c=0;c<n;c++){const s=sp[c];const m=makeMon('cousin',s%W,(s/W)|0,G.depth);m.maxHp=m.hp=30+10*it.pw;m.temp=true;m.timer=20+10*it.pw;m.pw=it.pw;L.mons.push(m);flash(m.x,m.y,[120,184,255],300);}
+  msg(n>1?'You call your cousin. He brings his brother. Neither of them asks why.':'You call your cousin. He said “five minutes,” and somehow he actually shows up.','good');}
  else if(it.k==='drone'){const r=9+3*it.pw;for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(Math.hypot(x-P.x,y-P.y)<=r){L.known[idx(x,y)]=1;}for(const o of L.items)if(Math.hypot(o.x-P.x,o.y-P.y)<=r)o.seen=1;
-  msg('Your drone buzzes overhead and maps the area.','good');}
+  if(it.pw>=2){P.st.tele=Math.max(P.st.tele||0,10*it.pw);msg('Your drone buzzes overhead, maps the area and spots every animal around.','good');}
+  else msg('Your drone buzzes overhead and maps the area.','good');}
  endTurn(100);
 }
 function useCharm(it){
@@ -955,32 +1064,50 @@ function throwPebble(it){
  startTarget('Throw a pebble at what?',8,(x,y)=>{
   const path=boltPath(P.x,P.y,x,y,8);let land=[P.x,P.y];let hitM=null;
   for(const p of path){if(!TD[L.t[idx(p[0],p[1])]].pass)break;land=p;const m=monAt(p[0],p[1]);if(m){hitM=m;break;}}
+  trail(path,[214,204,190]);
   removeOne(it);const peb=makeItem('pebbles');peb.q=1;peb.x=land[0];peb.y=land[1];
+  if(hitM&&hitM.state==='npc'){msg('You think better of throwing stones at a trader.');hitM=null;}
   if(hitM){const t=MT[hitM.k];const sneak=hitM.state==='sleep'||hitM.stun>0;
-   if(sneak||chance(hitPct(playerAcc(),t.def)/100)){let dmg=ri(2,4)*(sneak?3:1);hitM.hp-=dmg;if(hitM.hp<=0)driveOff(hitM,null);else{msg(`Your pebble hits the ${t.name}.`);if(isHostile(hitM))hitM.state='hunt';}}
-   else{msg(`Your pebble misses the ${t.name}.`);if(isHostile(hitM))hitM.state='hunt';}}
+   if(sneak||chance(hitPct(playerAcc(),t.def)/100)){let dmg=ri(2,4)*(sneak?3:1);hitM.hp-=dmg;sfx('hit');if(hitM.hp<=0)driveOff(hitM,null,true);else{msg(`Your pebble hits the ${t.name}.`);if(isHostile(hitM))hitM.state='hunt';}}
+   else{msg(`Your pebble misses the ${t.name}.`);sfx('miss');if(isHostile(hitM))hitM.state='hunt';}}
   const ex=L.items.find(o=>o.k==='pebbles'&&o.x===peb.x&&o.y===peb.y);if(ex)ex.q++;else L.items.push(peb);
   endTurn(100);});
 }
 function throwTreat(it){
  if(it.k==='dogtreats'){
-  startTarget('Throw a treat to which animal?',8,(x,y)=>{const path=boltPath(P.x,P.y,x,y,8);let m=null;for(const p of path){if(!TD[L.t[idx(p[0],p[1])]].pass)break;m=monAt(p[0],p[1]);if(m)break;}
+  startTarget('Throw a treat to which animal?',8,(x,y)=>{const path=boltPath(P.x,P.y,x,y,8);trail(path,[206,134,82]);let m=null;for(const p of path){if(!TD[L.t[idx(p[0],p[1])]].pass)break;m=monAt(p[0],p[1]);if(m)break;}
    it.c--;if(it.c<=0){removeItem(it);}
-   if(m&&MT[m.k].canine&&(isHostile(m)||m.state==='neutral')){m.state='ally';m.fear=0;m.carry=0;G.stats.tamed++;msg(`The ${MT[m.k].name} wolfs down the treat and decides you're its human now.`,'gold');}
+   if(m&&MT[m.k].canine&&(isHostile(m)||m.state==='neutral')){m.state='ally';m.fear=0;m.carry=0;G.stats.tamed++;flash(m.x,m.y,[255,214,90],320);sfx('tame');msg(`The ${MT[m.k].name} wolfs down the treat and decides you're its human now.`,'gold');}
    else if(m)msg(`The ${MT[m.k].name} isn’t interested in dog treats.`);else msg('The treat lands in the dust.');
    if(it.c<=0)msg('That was your last dog treat.');endTurn(100);});return;
  }
  if(it.k==='firecrackers'){
   startTarget('Throw firecrackers where?',8,(x,y)=>{const path=boltPath(P.x,P.y,x,y,8);let land=[P.x,P.y];for(const p of path){if(!TD[L.t[idx(p[0],p[1])]].pass)break;land=p;if(monAt(p[0],p[1]))break;}
-   it.c--;if(it.c<=0)removeItem(it);explode(land[0],land[1]);endTurn(100);});
+   trail(path,[236,72,60]);it.c--;if(it.c<=0)removeItem(it);explode(land[0],land[1]);endTurn(100);});
  }
 }
 function explode(x,y){
- msg('BANG! BANG-BANG-BANG! Firecrackers!','warn');interrupt=false;
- for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;if(!inb(nx,ny))continue;ignite(idx(nx,ny));
-  const m=monAt(nx,ny);if(m&&!isFriend(m)){m.hp-=ri(3,6);if(m.hp<=0)driveOff(m,null);}
+ msg('BANG! BANG-BANG-BANG! Firecrackers!','warn');interrupt=false;sfx('boom');shake();
+ for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;if(!inb(nx,ny))continue;ignite(idx(nx,ny));flash(nx,ny,[255,150,40],380,120);
+  const m=monAt(nx,ny);if(m&&!isFriend(m)&&m.state!=='npc'){m.hp-=ri(3,6);if(m.hp<=0)driveOff(m,null,true);}
   if(P.x===nx&&P.y===ny)damagePlayer(ri(2,5),'your own firecrackers');}
- for(const m of L.mons)if(cheb(m.x,m.y,x,y)<=4&&!isFriend(m)){m.fear=8;if(isHostile(m))m.state='hunt';}
+ for(const m of L.mons)if(cheb(m.x,m.y,x,y)<=4&&!isFriend(m)&&m.state!=='npc'){m.fear=8;if(isHostile(m))m.state='hunt';}
+}
+// Throw a drink: it splashes everything in a 3×3 area. Bad drinks become weapons; good ones heal your animals.
+function throwDrink(it){
+ startTarget(`Throw the ${itemName(it)} where?`,8,(x,y)=>{
+  const path=boltPath(P.x,P.y,x,y,8);let land=[P.x,P.y];for(const p of path){if(!TD[L.t[idx(p[0],p[1])]].pass)break;land=p;if(monAt(p[0],p[1]))break;}
+  const k=it.k;const col=G.app[k].col;const was=G.known[k];G.known[k]=true;removeOne(it);trail(path,col);
+  let n=0;
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=land[0]+dx,ny=land[1]+dy;if(!inb(nx,ny))continue;flash(nx,ny,col,420,140);
+   const m=monAt(nx,ny);if(!m||m.state==='npc')continue;n++;
+   if(k==='spoiled')m.conf=8;else if(k==='soda')m.slowed=8;else if(k==='energy')m.hasted=8;
+   else if(k==='juice')m.hp=m.maxHp;else if(k==='laban')m.hp=Math.min(m.maxHp,m.hp+Math.round(m.maxHp*.4));
+   if(isHostile(m)&&m.state!=='flee')m.state='hunt';}
+  const effect={spoiled:'Anything it splashed is stumbling around, dizzy.',soda:'Anything it splashed slows to a sugary crawl.',energy:'Uh oh. Anything it splashed is now wired and fast.',juice:'Anything it splashed looks completely refreshed.',laban:'Anything it splashed looks a bit better.',mint:'It smells great. Nothing else happens.'}[k];
+  msg(`The ${was?IT[k].name:G.app[k].n} smashes and splashes${n?'':' the ground'}. ${n?effect:''}`);
+  if(!was)msg(`(It was ${IT[k].name}.)`);
+  endTurn(100);});
 }
 function ignite(i){if(TD[L.t[i]].flam>0&&!L.fire[i])L.fire[i]=ri(3,6)+(L.t[i]===T.OIL?2:0);}
 function boltPath(x0,y0,x1,y1,range){
@@ -996,7 +1123,7 @@ function dropItem(it){
 
 // ================= TARGETING =================
 function startTarget(label,range,cb){
- const cands=L.mons.filter(m=>vis[idx(m.x,m.y)]&&!isFriend(m)).sort((a,b)=>cheb(a.x,a.y,P.x,P.y)-cheb(b.x,b.y,P.x,P.y));
+ const cands=L.mons.filter(m=>canSee(m)&&!isFriend(m)&&m.state!=='npc').sort((a,b)=>cheb(a.x,a.y,P.x,P.y)-cheb(b.x,b.y,P.x,P.y));
  targ={label,range,cb,cands,i:0,x:cands[0]?cands[0].x:P.x,y:cands[0]?cands[0].y:P.y};
  $('#bannerTxt').textContent=`${label} Tap or click a spot. Tab cycles, Enter confirms.`;$('#banner').hidden=false;render();
 }
@@ -1015,7 +1142,7 @@ function endTurn(cost){
   const et=G.envNext;
   if(P.next<=Math.min(mt,et))break;
   if(et<=mt){envTick();G.envNext+=100;}
-  else{const c=monAct(mm)||100;if(L.mons.includes(mm))mm.next+=c;}
+  else{let c=monAct(mm)||100;if(mm.slowed>0)c*=2;if(mm.hasted>0)c=Math.round(c/2);if(L.mons.includes(mm))mm.next+=c;}
  }
  afterTurn(false);
 }
@@ -1026,13 +1153,15 @@ function afterTurn(full){
 }
 function damagePlayer(d,cause){
  if(G.over)return;P.hp-=d;interrupt=true;
+ if(d>0){flash(P.x,P.y,[230,60,50],260);sfx('hurt');if(d>=5||d>=P.maxHp*.15)shake();}
  if(P.hp<=0){P.hp=0;die(cause);}
 }
 function envTick(){
  G.turn++;
  const z=zoneOf(G.depth);const o=eqItem('outfit');
  let rate=z.heat*(o&&IT[o.k].heat?IT[o.k].heat:1)*Math.max(.3,1-.15*accPow('shemagh'));
- if(L.dust[idx(P.x,P.y)]>8)rate+=.5;
+ if(rune('outfit')==='cool'){rate*=.7;if(G.turn%200===0)revealRune('outfit');}
+ if(L.dust[idx(P.x,P.y)]>8){if(rune('outfit')==='sand')revealRune('outfit');else rate+=.5;}
  const before=P.thirst;P.thirst=Math.max(0,P.thirst-rate);
  if(before>300&&P.thirst<=300)msg('You’re getting thirsty.','warn');
  if(before>150&&P.thirst<=150)msg('Your throat is drier than Jahra in August. Drink something!','warn');
@@ -1045,7 +1174,7 @@ function envTick(){
  for(const it of P.inv){const d=IT[it.k];
   if(d.cat==='gadget'&&it.c<it.mx){it.rt++;if(it.rt>=Math.round(d.rech/(1+.35*accPow('watch')))){it.c++;it.rt=0;}}
   if(d.cat==='charm'&&it.cd>0){it.cd--;if(it.cd===0)msg(`Your ${d.name} is ready again.`,'good');}}
- if(o&&!o.known){o.wear=(o.wear||0)+1;if(o.wear>=300){o.known=true;msg(`You’re used to your ${IT[o.k].name} now: it's ${o.ench>=0?'+':''}${o.ench}.`,'good');}}
+ if(o&&!o.known){o.wear=(o.wear||0)+1;if(o.wear>=300){o.known=true;msg(`You’re used to your ${IT[o.k].name} now: it's ${o.ench>=0?'+':''}${o.ench}${o.rn?` and ${RUNES[o.rn].name}`:''}.`,'good');}}
  fireTick();if(G.over)return;
  if(z.storms)dustTick();
  for(const m of L.mons)if(m.hp<m.maxHp&&chance(isFriend(m)?.1:.04))m.hp++;
@@ -1059,7 +1188,7 @@ function fireTick(){
   if(f[i]===0){t[i]=t[i]===T.DOOR?T.FLOOR:T.ASH;}}
  for(const j of ign)ignite(j);
  if(!any)return;
- for(const m of L.mons.slice()){if(!f[idx(m.x,m.y)])continue;m.hp-=ri(2,5);m.fear=Math.max(m.fear,3);if(m.hp<=0)driveOff(m,null);}
+ for(const m of L.mons.slice()){if(!f[idx(m.x,m.y)]||m.state==='npc')continue;m.hp-=ri(2,5);m.fear=Math.max(m.fear,3);if(m.hp<=0)driveOff(m,null);}
  if(f[idx(P.x,P.y)]){msg('You’re standing in fire!','bad');damagePlayer(ri(2,5),'a grass fire');}
 }
 let dustBuf=new Float32Array(N);
@@ -1081,13 +1210,14 @@ function spawnWanderer(){
 function win(){
  const nw=netWorth();G.over={won:true,cause:''};
  try{localStorage.removeItem('rizq-save');}catch(e){}
- showEnd(true,nw);
+ if(!SIM)showEnd(true,nw);
 }
 function die(cause){
  G.over={won:false,cause};
  try{localStorage.removeItem('rizq-save');}catch(e){}
  msg(`You collapse. (${cause})`,'bad');
- updateUI();render();setTimeout(()=>showEnd(false,netWorth()),350);
+ updateUI();render();
+ const g=G;if(!SIM)setTimeout(()=>{if(G===g)showEnd(false,netWorth());},350);
 }
 
 // ================= MONSTER AI =================
@@ -1113,25 +1243,39 @@ function fleeStep(m){
 }
 const moveCost=m=>(MT[m.k].speed||100)*(TD[L.t[idx(m.x,m.y)]].slow?2:1);
 const adjacentP=m=>cheb(m.x,m.y,P.x,P.y)===1&&!diagBlocked(m.x,m.y,P.x,P.y);
-function monAttack(m,tgt){
+function monAttack(m,tgt,mult){
  const t=MT[m.k];const isP=tgt===P;const tn=isP?null:MT[tgt.k];
  const armor=isP?playerArmor():tn.def;
  const seen=vis[idx(m.x,m.y)];
  const who=m.state==='ally'||m.state==='herd'?`Your ${t.name}`:`The ${t.name}`;
+ if(t.hitrun)m.fear=2; // crows peck, then flap back out of reach
  if(!chance(hitPct(t.acc,armor)/100)){if(isP)msg(`The ${t.name} misses you.`);else if(seen)msg(`${who} misses the ${tn.name}.`);return 100;}
- const dmg=ri(t.dmg[0],t.dmg[1])+(m.temp?Math.floor((m.pw||1)/2):0);
+ let dmg=ri(t.dmg[0],t.dmg[1])+(m.temp?Math.floor((m.pw||1)/2):0);
+ // Pack hunters bite harder when packmates are also next to the target.
+ if(t.howl){const tx=tgt.x,ty=tgt.y;dmg+=L.mons.filter(o=>o!==m&&o.k===m.k&&isHostile(o)&&cheb(o.x,o.y,tx,ty)===1).length;}
+ if(mult)dmg=Math.round(dmg*mult);
  if(isP){
-  msg(`The ${t.name} ${t.verb||'hits'} you.`,'bad');
+  msg(`The ${t.name} ${t.verb||'hits'} you${mult?' hard':''}.`,'bad');
   if(t.poison){P.poison+=t.poison;msg('You’ve been poisoned!','bad');}
-  if(t.stealMoney&&P.dinars>0&&!m.carry){const amt=Math.min(P.dinars,ri(10,40)*G.depth);P.dinars-=amt;m.carry=amt;m.state='flee';msg(`The ${t.name} snatches ${fmt(amt)} KD and makes a run for it!`,'bad');}
-  if(t.stealFood&&!m.food){const dt=P.inv.find(i=>i.k==='dates');if(dt){const q=1;removeOne(dt);m.food=q;m.state='flee';msg(`The ${t.name} grabs your dates and runs!`,'bad');}}
+  if(t.stealMoney&&P.dinars>0&&!m.carry){
+   if(rune('outfit')==='pockets'){revealRune('outfit');msg(`The ${t.name} tugs at your zipped pockets and gets nothing.`);}
+   else{const amt=Math.min(P.dinars,ri(10,40)*G.depth);P.dinars-=amt;m.carry=amt;m.state='flee';m.fear=0;msg(`The ${t.name} snatches ${fmt(amt)} KD and makes a run for it! (Banked money is safe.)`,'bad');}}
+  if(t.stealFood&&!m.food){const dt=P.inv.find(i=>i.k==='dates');if(dt){removeOne(dt);m.food=1;m.state='flee';msg(`The ${t.name} grabs your dates and runs!`,'bad');}}
+  if(rune('outfit')==='thorny'&&m.state!=='npc'){m.hp-=ri(1,3);revealRune('outfit');if(m.hp<=0){damagePlayer(dmg,`${/^[aeiou]/i.test(t.name)?'an':'a'} ${t.name}`);driveOff(m,'The burrs on your outfit are too much.',true);return 100;}}
   damagePlayer(dmg,`${/^[aeiou]/i.test(t.name)?'an':'a'} ${t.name}`);
  }else{
-  tgt.hp-=dmg;if(seen)msg(`${who} ${t.verb||'hits'} the ${tn.name}.`,isFriend(tgt)?'warn':'');
+  tgt.hp-=dmg;flash(tgt.x,tgt.y,isFriend(tgt)?[230,60,50]:[255,250,235],170);
+  if(seen)msg(`${who} ${t.verb||'hits'} the ${tn.name}.`,isFriend(tgt)?'warn':'');
   if(isHostile(tgt)&&tgt.state!=='flee')tgt.state='hunt';
   if(tgt.hp<=0)driveOff(tgt,null);
  }
  return 100;
+}
+// Wolves howl when they find you, and the rest of the pack joins the hunt.
+function startHunt(m){
+ m.state='hunt';m.lost=0;const t=MT[m.k];
+ if(t.howl){let n=0;for(const o of L.mons)if(o!==m&&o.k===m.k&&(o.state==='sleep'||o.state==='wander')){o.state='hunt';o.lost=0;n++;}
+  if(!L.howled){L.howled=1;sfx('howl');msg(n?'A wolf howls. The rest of the pack answers, and it’s coming for you.':'A wolf howls.','bad');}}
 }
 function noticed(m,asleep){
  if(!vis[idx(m.x,m.y)])return false;let sr=stealthRange();if(asleep)sr=Math.max(1,sr/2);
@@ -1139,7 +1283,11 @@ function noticed(m,asleep){
 }
 function monAct(m){
  const t=MT[m.k];
+ if(m.state==='npc')return 100;
+ if(m.slowed>0)m.slowed--;if(m.hasted>0)m.hasted--;
  if(m.stun>0){m.stun--;return 100;}
+ if(m.conf>0){m.conf--;randomStep(m);return moveCost(m);}
+ if(m.winded>0)m.winded--;
  if(m.state==='captive')return 100;
  if(m.temp){m.timer--;if(m.timer<=0){L.mons=L.mons.filter(o=>o!==m);if(vis[idx(m.x,m.y)])msg('Your cousin’s phone rings. His mom needs him. He leaves.');return 100;}}
  if(m.fear>0){m.fear--;if(!fleeStep(m)&&isHostile(m)&&adjacentP(m))return monAttack(m,P);return moveCost(m);}
@@ -1150,15 +1298,17 @@ function monAct(m){
   case 'herd':return followAct(m);
   case 'ally':return allyAct(m);
   case 'sleep':
-   if(noticed(m,true)){m.state='hunt';m.lost=0;if(vis[idx(m.x,m.y)]){msg(`The ${t.name} wakes up and notices you!`,'warn');}}
+   if(noticed(m,true)){if(canSee(m)||cheb(m.x,m.y,P.x,P.y)<=2)msg(`The ${t.name} ${t.hidden?'bursts out of hiding':'wakes up'} and notices you!`,'warn');startHunt(m);}
    return 100;
   case 'wander':
-   if(noticed(m,false)){m.state='hunt';m.lost=0;msg(`The ${t.name} notices you!`,'warn');return 100;}
+   if(noticed(m,false)){msg(`The ${t.name} notices you!`,'warn');startHunt(m);return 100;}
    return wanderAct(m);
   case 'hunt':return huntAct(m);
   case 'flee':{
-   if((m.carry||m.food)&&!vis[idx(m.x,m.y)]&&cheb(m.x,m.y,P.x,P.y)>7&&chance(.15)){
-    L.mons=L.mons.filter(o=>o!==m);msg(m.carry?`Somewhere, a ${t.name} is ${fmt(m.carry)} KD richer than it was this morning.`:`The ${t.name} got away with your dates.`,'bad');return 100;}
+   const d=cheb(m.x,m.y,P.x,P.y);
+   if((m.carry||m.food)&&((!vis[idx(m.x,m.y)]&&d>7&&chance(.15))||(t.stealMoney&&d>3&&chance(.12)))){
+    L.mons=L.mons.filter(o=>o!==m);
+    msg(m.carry?(vis[idx(m.x,m.y)]?`The ${t.name} flies off over the rooftops with your ${fmt(m.carry)} KD.`:`Somewhere, a ${t.name} is ${fmt(m.carry)} KD richer than it was this morning.`):`The ${t.name} got away with your dates.`,'bad');return 100;}
    if(!m.carry&&!m.food&&m.hp>=m.maxHp*.8)m.state='hunt';
    if(!fleeStep(m)&&adjacentP(m))return monAttack(m,P);
    return moveCost(m);}
@@ -1166,10 +1316,25 @@ function monAct(m){
  return 100;
 }
 function huntAct(m){
- const t=MT[m.k];
+ const t=MT[m.k];const d=cheb(m.x,m.y,P.x,P.y);
  if(t.erratic&&chance(t.erratic)){randomStep(m);return moveCost(m);}
+ // Bull camels charge in a straight line, then need a moment to catch their breath.
+ if(t.charge&&!m.winded&&d>=2&&d<=6&&vis[idx(m.x,m.y)]){
+  const ax=Math.abs(P.x-m.x),ay=Math.abs(P.y-m.y),sx=Math.sign(P.x-m.x),sy=Math.sign(P.y-m.y);
+  if(ax===0||ay===0||ax===ay){let ok=true;const path=[];let cx=m.x,cy=m.y;
+   for(let s=1;s<d;s++){const nx=m.x+sx*s,ny=m.y+sy*s;if(!monPass(idx(nx,ny))||monAt(nx,ny)||diagBlocked(cx,cy,nx,ny)){ok=false;break;}path.push([nx,ny]);cx=nx;cy=ny;}
+   if(ok&&!diagBlocked(cx,cy,P.x,P.y)){trail(path,[214,150,90]);m.x=cx;m.y=cy;m.winded=4;msg(`The ${t.name} charges!`,'bad');const r=monAttack(m,P,1.5);m.stun=1;return r;}}}
+ // Hyenas circle until you're hurt, then commit.
+ if(t.cautious&&P.hp>P.maxHp*.5&&d<=2){
+  if(!m.circled){m.circled=1;if(canSee(m))msg(`The ${t.name} circles you, waiting for you to weaken.`,'warn');}
+  if(d===1&&chance(.25))return monAttack(m,P);
+  fleeStep(m);return moveCost(m);}
  if(adjacentP(m))return monAttack(m,P);
- for(const[dx,dy]of DIRS){const o=monAt(m.x+dx,m.y+dy);if(o&&isFriend(o)&&!diagBlocked(m.x,m.y,o.x,o.y)&&chance(.5))return monAttack(m,o);}
+ for(const[dx,dy]of DIRS){const o=monAt(m.x+dx,m.y+dy);if(o&&isFriend(o)&&!diagBlocked(m.x,m.y,o.x,o.y)&&chance(t.predator&&o.state==='herd'?.85:.5))return monAttack(m,o);}
+ // Predators go after your herd when it's closer than you are.
+ if(t.predator){let prey=null,pd=d;for(const o of L.mons)if(o.state==='herd'){const od=cheb(o.x,o.y,m.x,m.y);if(od<pd&&od<=8){pd=od;prey=o;}}
+  if(prey){if(!m.preyWarned&&canSee(prey)){m.preyWarned=1;msg(`The ${t.name} is going for your ${MT[prey.k].name}!`,'warn');}
+   if(!stepDown(m,bfs([idx(prey.x,prey.y)],monPass)))randomStep(m);return moveCost(m);}}
  if(vis[idx(m.x,m.y)])m.lost=0;else if(++m.lost>25){m.state='wander';return 100;}
  if(!stepDown(m,distP))randomStep(m);
  return moveCost(m);
@@ -1187,6 +1352,7 @@ function wanderAct(m){
  return moveCost(m);
 }
 function followAct(m){
+ if(m.state==='herd'&&G.herdStay){if(chance(.1))randomStep(m);return moveCost(m);}
  const d=distP[idx(m.x,m.y)];
  if(d>2){if(!stepDown(m,distP))randomStep(m);}
  else if(chance(.15))randomStep(m);
@@ -1203,13 +1369,16 @@ function allyAct(m){
 }
 
 // ================= AUTO (explore / travel / rest) =================
-const walkKnown=i=>(P.x+P.y*W===i)||(L.known[i]&&TD[L.t[i]].pass&&!L.fire[i]&&L.t[i]!==T.DOWN&&L.t[i]!==T.UP&&L.t[i]!==T.HOME);
-function visibleThreats(){return L.mons.filter(m=>isHostile(m)&&m.state!=='sleep'&&vis[idx(m.x,m.y)]);}
+// Traders stand still; auto-explore and travel path around them.
+let npcCells=new Set();
+const refreshNpcCells=()=>{npcCells=new Set(L.mons.filter(m=>m.state==='npc').map(m=>idx(m.x,m.y)));};
+const walkKnown=i=>(P.x+P.y*W===i)||(L.known[i]&&TD[L.t[i]].pass&&!L.fire[i]&&!npcCells.has(i)&&L.t[i]!==T.DOWN&&L.t[i]!==T.UP&&L.t[i]!==T.HOME);
+function visibleThreats(){return L.mons.filter(m=>isHostile(m)&&m.state!=='sleep'&&canSee(m));}
 function startAuto(type,goal){
  if(G.over)return;
  const th=visibleThreats().filter(m=>cheb(m.x,m.y,P.x,P.y)<=9&&m.state!=='flee');
  if(th.length&&type!=='travel-force'){msg(`Not now. There’s a ${MT[th[0].k].name} nearby.`,'warn');updateUI();return;}
- auto={type,goal,seen:new Set(L.mons.filter(m=>isHostile(m)&&vis[idx(m.x,m.y)]).map(m=>m.id)),n:0};
+ auto={type,goal,seen:new Set(L.mons.filter(m=>isHostile(m)&&canSee(m)).map(m=>m.id)),n:0};
  interrupt=false;setTimeout(runAuto,0);
 }
 function stopAuto(){auto=null;}
@@ -1222,7 +1391,7 @@ function runAuto(){
  if(!auto)return;
  auto.n++;
  if(!ok||G.depth!==depth||auto.n>600){auto=null;updateUI();render();return;}
- const now=L.mons.filter(m=>isHostile(m)&&vis[idx(m.x,m.y)]);
+ const now=L.mons.filter(m=>isHostile(m)&&canSee(m));
  if(now.some(m=>!auto.seen.has(m.id))||P.hp<hp||interrupt){auto=null;interrupt=false;updateUI();render();return;}
  auto.seen=new Set(now.map(m=>m.id));
  setTimeout(runAuto,auto.type==='rest'?4:22);
@@ -1234,8 +1403,10 @@ function stepToward(d){
  return best;
 }
 function exploreStep(){
+ refreshNpcCells();
  const goals=[];
- for(const it of L.items)if(it.seen&&!it.vault&&!it.noauto&&!(it.x===P.x&&it.y===P.y))goals.push(idx(it.x,it.y));
+ const room=it=>P.inv.length<26||(STACK.has(IT[it.k]?.cat)&&P.inv.some(o=>o.k===it.k))||it.k==='money';
+ for(const it of L.items)if(it.seen&&!it.vault&&!it.noauto&&(!it.left||room(it))&&!(it.x===P.x&&it.y===P.y))goals.push(idx(it.x,it.y));
  let d=goals.length?bfs(goals,walkKnown):null;
  if(!d||d[idx(P.x,P.y)]>=32767||d[idx(P.x,P.y)]>25){
   const g2=[];const me=idx(P.x,P.y);for(let i=0;i<N;i++){if(i===me||!walkKnown(i))continue;const x=i%W,y=(i/W)|0;if(DIRS.some(([dx,dy])=>inb(x+dx,y+dy)&&!L.known[idx(x+dx,y+dy)]))g2.push(i);}
@@ -1243,16 +1414,17 @@ function exploreStep(){
  }
  const s=d&&stepToward(d);
  if(!s){msg(L.down&&L.known[idx(...L.down)]?'Explored everything you can reach. Press > to head onward.':'Explored everything you can reach.');return false;}
- const m=monAt(P.x+s[0],P.y+s[1]);if(m&&isHostile(m))return false;
+ const m=monAt(P.x+s[0],P.y+s[1]);if(m&&(isHostile(m)||m.state==='npc'))return false;
  return playerMove(s[0],s[1]);
 }
 function travelStep(){
+ refreshNpcCells();
  const g=idx(auto.goal[0],auto.goal[1]);
  if(P.x===auto.goal[0]&&P.y===auto.goal[1])return false;
  const pass=i=>i===g||walkKnown(i);
  const d=bfs([g],pass);const s=stepToward(d);
  if(!s){msg('You don’t know a way there yet.');return false;}
- const m=monAt(P.x+s[0],P.y+s[1]);if(m&&isHostile(m))return false;
+ const m=monAt(P.x+s[0],P.y+s[1]);if(m&&(isHostile(m)||m.state==='npc'))return false;
  return playerMove(s[0],s[1]);
 }
 function restStep(){
@@ -1279,6 +1451,12 @@ function serialize(){
 function deserialize(s){
  const o=JSON.parse(s);G=o.G;P=o.P;
  for(const d in G.levels){const l=G.levels[d];l.t=dec(l.t);l.known=dec(l.known);l.fire=dec(l.fire);l.dust=new Float32Array(N);}
+ // Older saves carried sacks of barley; dates replaced them as livestock feed.
+ const toDates=it=>{if(it.k==='barley'){it.k='dates';it.q=Math.max(1,it.c||1);delete it.c;}};
+ for(const d in G.levels)G.levels[d].items.forEach(toDates);
+ P.inv.forEach(toDates);
+ const ds=P.inv.filter(i=>i.k==='dates');if(ds.length>1){ds[0].q=ds.reduce((s,i)=>s+i.q,0);P.inv=P.inv.filter(i=>i.k!=='dates'||i===ds[0]);}
+ if(G.bank===undefined)G.bank=0;if(G.herdStay===undefined)G.herdStay=false;
  L=G.levels[G.depth];curRng=gameRng;wanderCache.clear();auto=null;targ=null;
 }
 function save(){if(!G||G.over)return;try{localStorage.setItem('rizq-save',serialize());}catch(e){}}
@@ -1286,13 +1464,17 @@ function hasSave(){try{return!!localStorage.getItem('rizq-save');}catch(e){retur
 
 // ================= RENDER =================
 const cv=$('#cv'),ctx=cv.getContext('2d');
-const view={cw:12,ch:19,cols:W,rows:H,camX:0,camY:0,dpr:1};
+const view={cw:12,ch:19,cols:W,rows:H,camX:0,camY:0,dpr:1,zoom:1};
+try{view.zoom=clamp(+localStorage.getItem('rizq-zoom')||1,.7,2);}catch(e){}
 let hoverCell=null;
+function setZoom(z){view.zoom=clamp(Math.round(z*10)/10,.7,2);try{localStorage.setItem('rizq-zoom',view.zoom);}catch(e){}resize();}
 function resize(){
  const wrap=$('#wrap');const aw=wrap.clientWidth-32,ah=wrap.clientHeight-16;if(aw<=0||ah<=0)return;
  let cw=Math.floor(aw/W),ch=Math.round(cw*1.62);
  if(ch*H>ah){ch=Math.floor(ah/H);cw=Math.floor(ch/1.62);}
- if(cw<10){cw=clamp(Math.floor(aw/32),11,16);ch=Math.round(cw*1.62);}
+ if(cw<10){cw=clamp(Math.floor(aw/32),11,16);}
+ // Zooming in past "whole map fits" switches to a camera that follows you.
+ cw=Math.max(7,Math.round(cw*view.zoom));ch=Math.round(cw*1.62);
  view.cw=cw;view.ch=ch;view.cols=Math.min(W,Math.floor(aw/cw));view.rows=Math.min(H,Math.floor(ah/ch));
  view.dpr=window.devicePixelRatio||1;
  cv.width=Math.round(view.cols*cw*view.dpr);cv.height=Math.round(view.rows*ch*view.dpr);
@@ -1308,6 +1490,7 @@ function tileColors(x,y,i,now){
  else if(tt===T.FLOOR||tt===T.SAND){fg=z.floor.fg;bg=z.floor.bg;}
  else{fg=d.fg;bg=d.bg;}
  if(tt===T.CAR)fg=CAR_COLS[Math.floor(hash(x,y,G.depth)*CAR_COLS.length)];
+ if(tt===T.CONT){const c=CONT_COLS[Math.floor(hash((x/5)|0,y,G.depth+9)*CONT_COLS.length)];fg=c;bg=scaleC(c,.35);}
  const v=(hash(x,y,G.depth*7+1)-.5)*22,v2=(hash(y,x,G.depth*3+5)-.5)*14;
  fg=[fg[0]+v,fg[1]+v,fg[2]+v];bg=[bg[0]+v2,bg[1]+v2,bg[2]+v2*.6];
  if(d.water||tt===T.OIL){const s=Math.sin(now/420+x*.7+y*1.3)*14;fg=[fg[0]+s,fg[1]+s,fg[2]+s];bg=[bg[0],bg[1]+s*.4,bg[2]+s*.7];}
@@ -1349,7 +1532,7 @@ function render(){
   }
   const it=ig.get(i);
   if(x===P.x&&y===P.y){g='@';fg=[255,236,190];}
-  else if(mon&&(seen||tele)){const t=MT[mon.k];g=t.ch;fg=seen?t.col:[180,140,220];
+  else if(mon&&((seen&&canSee(mon))||tele)){const t=MT[mon.k];g=t.ch;fg=seen?t.col:[180,140,220];
    if(seen&&mon.state==='ally')bg=lerpC(bg,[40,90,60],.5);else if(seen&&mon.state==='herd')bg=lerpC(bg,[100,80,30],.5);else if(seen&&mon.state==='captive')bg=lerpC(bg,[60,60,110],.6);
    if(mon.stun>0&&seen)fg=lerpC(fg,[255,255,200],.5+.3*Math.sin(now/120));}
   else if(it&&(seen||it.seen)){g=itemCh(it);fg=seen?itemCol(it):scaleC(itemCol(it),.4);}
@@ -1358,12 +1541,14 @@ function render(){
   if(g!==' '&&g!=='·'){ctx.fillStyle=rgb(fg);ctx.fillText(g,px+cw/2,py+ch/2+1);}
   else if(g==='·'){ctx.fillStyle=rgb(fg);ctx.fillRect(px+cw/2-1,py+ch/2-1,2,2);}
  }
+ for(const f of fx){if(now<f.t0)continue;const a=Math.max(0,1-(now-f.t0)/f.dur);const vx=f.x-view.camX,vy=f.y-view.camY;if(vx<0||vy<0||vx>=cols||vy>=rows)continue;
+  ctx.fillStyle=`rgba(${f.col[0]},${f.col[1]},${f.col[2]},${(a*.55).toFixed(3)})`;ctx.fillRect(vx*cw,vy*ch,cw,ch);}
  if(hoverCell){const vx=hoverCell[0]-view.camX,vy=hoverCell[1]-view.camY;if(vx>=0&&vy>=0&&vx<cols&&vy<rows){ctx.strokeStyle='rgba(220,170,79,.8)';ctx.lineWidth=1;ctx.strokeRect(vx*cw+.5,vy*ch+.5,cw-1,ch-1);}}
 }
 setInterval(()=>{if(!G||!L)return;let anim=false;for(let i=0;i<N;i++){if(vis[i]&&(L.fire[i]||TD[L.t[i]].water||L.t[i]===T.OIL||L.dust[i]>1)){anim=true;break;}}if(anim||L.mons.some(m=>m.stun>0))render();},140);
 
 // ================= UI =================
-function stateLabel(m){return{sleep:'asleep',wander:'wandering',hunt:'hunting you',flee:'fleeing',ally:'your friend',herd:'your herd',captive:'tied up',neutral:MT[m.k].kind==='livestock'?'grazing':'minding its business'}[m.state]||'';}
+function stateLabel(m){return{npc:'trading',sleep:'asleep',wander:'wandering',hunt:'hunting you',flee:'fleeing',ally:'your friend',herd:'your herd',captive:'tied up',neutral:MT[m.k].kind==='livestock'?'grazing':'minding its business'}[m.state]||'';}
 function updateUI(){
  if(!G)return;
  $('#hpTxt').textContent=`${P.hp} / ${P.maxHp}`;
@@ -1377,12 +1562,13 @@ function updateUI(){
  const td=tool?IT[tool.k]:null;
  const herd=L.mons.filter(m=>m.state==='herd').length,allies=L.mons.filter(m=>m.state==='ally').length;
  $('#youKv').innerHTML=[
-  ['Cash',`${fmt(P.dinars)} KD`],['Fitness',P.str],['Armor',shownArmor()],
+  ['Cash',`${fmt(P.dinars)} KD`],['Bank',`${fmt(G.bank||0)} KD`],['Fitness',P.str],['Armor',shownArmor()],
   ['Tool',tool?esc(itemName(tool))+(strPen(tool)?' <span style="color:var(--bad)">(heavy)</span>':''):'bare hands'],
   ['Damage',td?`${td.dmg[0]}–${td.dmg[1]}`:'1–2'],
   ['Outfit',out?esc(itemName(out)):'none'],
   ['Wearing',accs.length?accs.map(a=>esc(itemName(a))).join(', '):'—'],
-  ['With you',`${herd} herd · ${allies} friends`]
+  ['With you',`${herd} herd · ${allies} friends`],
+  ['Animals worth',`${fmt(herdValue())} KD`+(G.herdStay?' <span style="color:var(--warn)">(staying)</span>':'')]
  ].map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('');
  const chips=[];
  if(P.poison)chips.push(['bad',`Poisoned ${P.poison}`]);
@@ -1395,9 +1581,9 @@ function updateUI(){
  if(L.dust[idx(P.x,P.y)]>8)chips.push(['warn','In a sandstorm']);
  if(P.rested)chips.push(['','Resting (quiet)']);
  $('#chips').innerHTML=chips.length?chips.map(([c,t])=>`<span class="chip ${c}">${t}</span>`).join(''):'<span class="empty">All good.</span>';
- const vm=L.mons.filter(m=>vis[idx(m.x,m.y)]).sort((a,b)=>cheb(a.x,a.y,P.x,P.y)-cheb(b.x,b.y,P.x,P.y)).slice(0,8);
+ const vm=L.mons.filter(m=>canSee(m)).sort((a,b)=>cheb(a.x,a.y,P.x,P.y)-cheb(b.x,b.y,P.x,P.y)).slice(0,8);
  $('#monList').innerHTML=vm.length?vm.map(m=>{const t=MT[m.k];const f=m.hp/m.maxHp;
-  return`<div class="mon"><span class="g" style="color:${rgb(t.col)}">${esc(t.ch)}</span><span class="n"><span>${esc(t.name)}</span><span>${stateLabel(m)}</span></span><span></span><div class="bar"><i style="width:${f*100}%;background:${isFriend(m)?'var(--sea)':f<.4?'var(--bad)':'var(--warn)'}"></i></div></div>`;}).join(''):'<p class="empty">Nothing around. Enjoy the quiet.</p>';
+  return`<div class="mon"><span class="g" style="color:${rgb(t.col)}">${esc(t.ch)}</span><span class="n"><span>${esc(m.title?cap(m.title):t.name)}</span><span>${stateLabel(m)}</span></span><span></span><div class="bar"><i style="width:${f*100}%;background:${isFriend(m)?'var(--sea)':f<.4?'var(--bad)':'var(--warn)'}"></i></div></div>`;}).join(''):'<p class="empty">Nothing around. Enjoy the quiet.</p>';
  const recent=G.msgs.slice(-4);const lastTurn=G.msgs.length?G.msgs[G.msgs.length-1].n:0;
  $('#log').innerHTML=recent.map(m=>`<div class="${m.n>=lastTurn-1&&m.n>=G.turn-1?'new '+m.c:''}">${esc(m.t)}</div>`).join('');
  updateHover();
@@ -1407,11 +1593,11 @@ function describe(x,y){
  if(x===P.x&&y===P.y){const it=L.items.find(o=>o.x===x&&o.y===y);return`<b>You.</b> ${P.hp}/${P.maxHp} energy, ${fmt(P.dinars)} KD in your pocket.${it?` Lying here: ${esc(aName(it))}.`:''}`;}
  if(!L.known[i])return'You haven’t seen this spot yet.';
  const m=monAt(x,y);
- if(m&&(vis[i]||P.st.tele)){const t=MT[m.k];let s=`<b>${esc(t.name[0].toUpperCase()+t.name.slice(1))}</b> (${stateLabel(m)}). ${esc(t.desc)}`;
+ if(m&&(canSee(m)||P.st.tele)){const t=MT[m.k];let s=`<b>${esc(m.title?cap(m.title):cap(t.name))}</b> (${stateLabel(m)}). ${esc(t.desc)}`;
   if(isHostile(m)){const tool=eqItem('tool');const dd=tool?IT[tool.k].dmg:[1,2];const avg=((dd[0]+dd[1])/2)*Math.pow(1.065,(tool?tool.ench:0)-strPen(tool));
    s+=` It hits you ${hitPct(t.acc,playerArmor())}% of the time for ${t.dmg[0]}–${t.dmg[1]}. You hit it ${hitPct(playerAcc(),t.def)}%, about ${Math.max(1,Math.ceil(m.hp/avg))} hits to drive it off.`;
    if(m.state==='sleep'||m.state==='wander')s+=' It hasn’t noticed you: sneak attacks do triple damage.';}
-  if(m.state==='neutral'&&t.kind==='livestock')s+=P.inv.some(o=>o.k==='barley')?' Walk into it to win it over with barley.':' You need barley to win it over.';
+  if(m.state==='neutral'&&t.kind==='livestock'){const n=t.feed||1,have=(P.inv.find(o=>o.k==='dates')||{q:0}).q;s+=have>=n?` Walk into it to feed it ${n===1?'a handful':n+' handfuls'} of dates and win it over.`:` It takes ${n===1?'a handful':n+' handfuls'} of dates to win it over. You have ${have}.`;}
   if(m.state==='captive')s+=' Walk into it to untie it.';
   return s;}
  const it=L.items.find(o=>o.x===x&&o.y===y);
@@ -1431,7 +1617,7 @@ function updateHover(){
 let invState=null;
 function openInv(opts){if(!G||G.over)return;invState=Object.assign({mode:'browse',sel:null,filter:null,title:'Your bag'},opts||{});$('#inv').hidden=false;drawInv();}
 function closeInv(){invState=null;$('#inv').hidden=true;}
-function primaryLabel(it){const d=IT[it.k];switch(d.cat){case 'drink':return'Drink';case 'tip':return'Read';case 'course':return'Take course';case 'water':return'Drink';case 'dates':case 'machboos':return'Eat';case 'protein':return'Drink';case 'tool':case 'outfit':case 'acc':return isEquipped(it)?'Remove':(d.cat==='tool'?'Equip':'Wear');case 'gadget':return'Use';case 'treat':return it.k==='barley'?null:'Throw';case 'charm':return'Use';case 'pebbles':return'Throw';}return null;}
+function primaryLabel(it){const d=IT[it.k];switch(d.cat){case 'drink':return'Drink';case 'tip':return'Read';case 'course':return'Take course';case 'water':return'Drink';case 'dates':case 'machboos':case 'gift':return'Eat';case 'protein':return'Drink';case 'tool':case 'outfit':case 'acc':return isEquipped(it)?'Remove':(d.cat==='tool'?'Equip':'Wear');case 'gadget':return'Use';case 'treat':return'Throw';case 'charm':return'Use';case 'pebbles':return'Throw';}return null;}
 function drawInv(){
  const items=P.inv.filter(it=>!invState.filter||invState.filter(it)).sort((a,b)=>a.letter.localeCompare(b.letter));
  $('#invTitle').textContent=invState.title;
@@ -1452,18 +1638,87 @@ function drawInv(){
  if(d.cat==='charm')stat=it.cd>0?`Recharging: ${it.cd} turns`:'Ready';
  const desc=isUnknown(it)&&(d.cat==='drink'||d.cat==='tip')?'You won’t know what this is until you try it. Could be great. Could be your cousin’s idea of a joke.':d.desc;
  const pl=primaryLabel(it);
- det.innerHTML=`<h4><span style="color:${rgb(itemCol(it))};font-family:var(--mono)">${esc(itemCh(it))}</span> ${esc(itemName(it))}</h4>${stat?`<div class="stat">${esc(stat)}</div>`:''}<p>${esc(desc)}</p><div class="btns">${pl?`<button class="btn primary" type="button" id="actUse">${pl}</button>`:''}<button class="btn" type="button" id="actDrop">Drop</button></div>`;
+ const runeTxt=it.rn&&(it.known||it.rk)?`<p><b style="color:var(--gold)">${cap(RUNES[it.rn].name)}:</b> ${esc(RUNES[it.rn].desc)}</p>`:'';
+ const canThrow=d.cat==='drink';
+ det.innerHTML=`<h4><span style="color:${rgb(itemCol(it))};font-family:var(--mono)">${esc(itemCh(it))}</span> ${esc(itemName(it))}</h4>${stat?`<div class="stat">${esc(stat)}</div>`:''}<p>${esc(desc)}</p>${runeTxt}${canThrow?'<p style="font-size:12px;color:var(--faint)">Throwing a drink splashes every animal in a small area with it.</p>':''}<div class="btns">${pl?`<button class="btn primary" type="button" id="actUse">${pl}</button>`:''}${canThrow?'<button class="btn" type="button" id="actThrow">Throw</button>':''}<button class="btn" type="button" id="actDrop">Drop</button></div>`;
  if(pl)$('#actUse').onclick=()=>{closeInv();useItem(it);updateUI();render();};
+ if(canThrow)$('#actThrow').onclick=()=>{closeInv();throwDrink(it);updateUI();render();};
  $('#actDrop').onclick=()=>{closeInv();dropItem(it);};
 }
 function invPick(it){if(!it)return;if(invState.mode==='select'){const cb=invState.onPick;closeInv();cb(it);updateUI();render();return;}invState.sel=it.id;drawInv();}
+
+// ===== Trader =====
+let shopM=null;
+const SUPPLIES=[['water','Bottle of water','Fully quenches your thirst.',25],['dates','Handful of dates','Food, or feed for livestock.',20],['dogtreats','Dog treats (2)','Turn a dog, fox, wolf or hyena into a friend.',60],['firecrackers','Firecrackers (3)','Loud, fiery, scary.',50],['course','Training course','+1 to one item. Price goes up each time.',350],['maamoul',"Box of ma'amoul",'A gift that gets you a better price.',40]];
+const priceMult=()=>(1+G.depth/8)*(shopM&&shopM.gift?.8:1);
+const price=b=>Math.max(5,Math.round(b*priceMult()/5)*5);
+function supplyPrice(k,b){return k==='course'?price(b*(1+.3*(G.coursesBought||0))):price(b);}
+function gearPrice(it){const d=IT[it.k];let b={tool:220,outfit:240,gadget:420,acc:150+150*it.pw,charm:360}[d.cat]||200;if(it.ench>0)b+=120*it.ench;if(it.rn)b+=220;return price(b);}
+const rideFee=()=>price(250+60*G.depth);
+const sellable=()=>L.mons.filter(m=>isFriend(m)&&(MT[m.k].value||0)>0&&cheb(m.x,m.y,P.x,P.y)<=10);
+function openShop(m){
+ shopM=m;
+ if(!m.stock){m.stock=[];for(let i=0;i<3;i++){const it=makeItem(wpick(catWeights(pick(['tool','outfit','gadget','acc','charm']))));if(it.ench!==undefined){it.ench=ri(0,2);it.known=true;}m.stock.push(it);}
+  m.req=pick(['sheep','goat','camel']);}
+ $('#shop').hidden=false;drawShop();
+}
+function closeShop(){shopM=null;$('#shop').hidden=true;if(G){updateUI();render();}}
+function drawShop(){
+ const m=shopM;if(!m)return;
+ $('#shopTitle').textContent=cap(m.title);
+ const greet=m.gift?'Thank you for the ma’amoul! Everything is 20% off for you today.':m.k&&G.depth<=4?'“Ahlan, come in, have some tea. What do you need?”':'“Welcome, welcome. Sit, have some gahwa. What can I do for you?”';
+ $('#shopIntro').textContent=greet;
+ $('#shopWallet').innerHTML=`<span>Cash <b>${fmt(P.dinars)} KD</b></span><span>Bank <b>${fmt(G.bank||0)} KD</b></span><span>Herd with you <b>${fmt(herdValue())} KD</b></span><span>Net worth <b>${fmt(netWorth())} KD</b></span>`;
+ const row=(name,sub,priceTxt,btn,act,dis)=>`<div class="shop-row"><span>${name}${sub?`<small>${sub}</small>`:''}</span><span style="display:flex;gap:8px;align-items:center">${priceTxt?`<span class="price">${priceTxt}</span>`:''}<button class="btn sm" type="button" data-act="${act}"${dis?' disabled':''}>${btn}</button></span></div>`;
+ const full=P.inv.length>=26;
+ let h='<div class="shop-sec"><h3>Supplies</h3>';
+ for(const[k,n,s,b]of SUPPLIES){const p=supplyPrice(k,b);const stackOk=!full||P.inv.some(o=>o.k===k);h+=row(n,s,`${fmt(p)} KD`,'Buy',`sup:${k}`,P.dinars<p||!stackOk);}
+ h+='</div><div class="shop-sec"><h3>Gear</h3>';
+ if(!m.stock.length)h+='<p class="empty">Sold out. Check the next trader.</p>';
+ m.stock.forEach((it,i)=>{const p=gearPrice(it);const d=IT[it.k];const sub=it.rn?RUNES[it.rn].desc:d.desc;h+=row(esc(itemName(it)),esc(sub),`${fmt(p)} KD`,'Buy',`gear:${i}`,P.dinars<p||full);});
+ h+='</div><div class="shop-sec"><h3>Sell animals</h3>';
+ const animals=sellable();
+ if(m.req)h+=`<p style="font-size:12.5px;margin:4px 0">Today they want a <b style="color:var(--gold)">${MT[m.req].name}</b> and will pay 50% extra for one.</p>`;
+ if(!animals.length)h+='<p class="empty">No animals with you to sell. Bring them close.</p>';
+ for(const a of animals){const t=MT[a.k];const v=t.value*(a.k===m.req?1.5:1);h+=row(cap(t.name)+(a.state==='ally'?' (friend)':''),a.k===m.req?'Exactly what they wanted.':'',`${fmt(v)} KD`,'Sell',`sell:${a.id}`,false);}
+ h+='</div><div class="shop-sec"><h3>Bank</h3>';
+ h+=row('Deposit all cash','Banked money is safe from crows and counts toward your net worth.','', 'Deposit','dep',P.dinars<=0);
+ h+=row('Withdraw everything','Take your savings back out as cash.','','Withdraw','wd',!(G.bank>0));
+ h+='<h3>Services</h3>';
+ if(G.depth>1)h+=row('Ride home in a pickup truck','Takes you and every animal with you straight to your front door.',`${fmt(rideFee())} KD`,'Ride home','ride',P.dinars<rideFee());
+ const gift=P.inv.find(o=>o.k==='maamoul');
+ h+=row("Offer ma'amoul",m.gift?'Already given. Everything is 20% off.':'Prices drop 20% here, and they tell you what one unknown item is.','',m.gift?'Given':'Give','gift',!gift||m.gift);
+ h+='</div>';
+ $('#shopBody').innerHTML=h;
+}
+$('#shopBody').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-act]');if(!b||b.disabled||!shopM)return;
+ const[a,arg]=b.dataset.act.split(':');const m=shopM;
+ if(a==='sup'){const s=SUPPLIES.find(x=>x[0]===arg);const p=supplyPrice(arg,s[3]);if(P.dinars<p)return;
+  const it=makeItem(arg);if(arg==='dogtreats')it.c=2;else if(arg==='firecrackers')it.c=3;else it.q=1;
+  if(!addInv(it)){msg('Your bag is full.','warn');}else{P.dinars-=p;if(arg==='course')G.coursesBought=(G.coursesBought||0)+1;sfx('buy');msg(`You buy ${aName(Object.assign({},it,{q:1}))} for ${fmt(p)} KD.`);}}
+ else if(a==='gear'){const it=m.stock[+arg];const p=gearPrice(it);if(P.dinars<p)return;
+  if(!addInv(it)){msg('Your bag is full.','warn');}else{P.dinars-=p;m.stock.splice(+arg,1);sfx('buy');msg(`You buy the ${itemName(it)} for ${fmt(p)} KD.`,'good');}}
+ else if(a==='sell'){const an=L.mons.find(o=>o.id===+arg);if(!an)return;const t=MT[an.k];const bonus=an.k===m.req;const v=t.value*(bonus?1.5:1);
+  L.mons=L.mons.filter(o=>o!==an);P.dinars+=v;G.stats.sold=(G.stats.sold||0)+1;if(bonus)m.req=null;sfx('coin');
+  msg(`You sell your ${t.name} for ${fmt(v)} KD.${bonus?' Exactly what they were looking for.':''}`,'gold');}
+ else if(a==='dep'){G.bank=(G.bank||0)+P.dinars;msg(`You deposit ${fmt(P.dinars)} KD. Savings: ${fmt(G.bank)} KD.`,'gold');P.dinars=0;sfx('coin');}
+ else if(a==='wd'){P.dinars+=G.bank;msg(`You withdraw ${fmt(G.bank)} KD in cash.`);G.bank=0;}
+ else if(a==='gift'){const g=P.inv.find(o=>o.k==='maamoul');if(!g)return;removeOne(g);m.gift=true;sfx('tame');
+  msg(`You hand over the ma’amoul. ${cap(m.title)} is delighted.`,'gold');const unk=P.inv.find(isUnknown);if(unk)identify(unk);}
+ else if(a==='ride'){const fee=rideFee();if(P.dinars<fee)return;P.dinars-=fee;closeShop();msg(`You pay ${fmt(fee)} KD for a ride home.`);goToLevel(1,'home',-1);return;}
+ drawShop();updateUI();
+});
+$('#shopClose').onclick=closeShop;
 
 // ===== End screens =====
 function showEnd(won,nw){
  $('#endTitle').textContent=won?'You made it home':'You passed out';
  $('#endText').textContent=won?`You walk through the front door with ${fmt(nw)} KD to your name. Your mother cries, your uncle takes credit, and the whole diwaniya suddenly wants a loan.`:`Collapsed from ${G.over.cause} on depth ${G.depth}. Someone drove you home. Your mother makes you tea and tells you to try again tomorrow.`;
- const herdN=Object.values(G.levels).reduce((s,l)=>s+l.mons.filter(isFriend).length,0);
- $('#endStats').innerHTML=[['Net worth',fmt(nw)+' KD'],['Deepest',`Depth ${G.stats.deepest}`],['Turns',fmt(G.turn)],['Animals driven off',G.stats.driven],['Herd & friends',herdN],['Seed',G.seed]].map(([k,v])=>`<div>${k}<b>${v}</b></div>`).join('');
+ const herdN=L.mons.filter(isFriend).length;
+ let best='';if(G.daily){const prev=dailyBest(G.daily);if(nw>prev){try{localStorage.setItem('rizq-daily-'+G.daily,String(Math.round(nw)));}catch(e){}best=prev?' A new personal best for today’s run!':'';}}
+ if(best)$('#endText').textContent+=best;
+ $('#endStats').innerHTML=[['Net worth',fmt(nw)+' KD'],['Deepest',`Depth ${G.stats.deepest}`],['Turns',fmt(G.turn)],['Animals driven off',G.stats.driven],['Animals sold',G.stats.sold||0],['With you at the end',herdN],[G.daily?'Daily run':'Seed',G.daily||G.seed]].map(([k,v])=>`<div>${k}<b>${v}</b></div>`).join('');
  $('#end').hidden=false;
 }
 
@@ -1476,6 +1731,7 @@ document.addEventListener('keydown',e=>{
  if(!$('#title').hidden){if(e.key==='Enter'){e.preventDefault();startNew();}return;}
  if(!$('#help').hidden){if(e.key==='Escape'||e.key==='Enter'||e.key==='?'){$('#help').hidden=true;e.preventDefault();}return;}
  if(!$('#end').hidden){if(e.key==='Enter'){startNew();}return;}
+ if(!$('#shop').hidden){if(e.key==='Escape'){closeShop();e.preventDefault();}return;}
  if(invState){
   if(e.key==='Escape'){closeInv();e.preventDefault();return;}
   if(e.key==='Enter'&&invState.sel){const it=P.inv.find(o=>o.id===invState.sel);if(it&&primaryLabel(it)){closeInv();useItem(it);updateUI();render();}e.preventDefault();return;}
@@ -1503,26 +1759,48 @@ document.addEventListener('keydown',e=>{
   case 'Z':act(()=>startAuto('rest'));break;
   case 'i':e.preventDefault();openInv();break;
   case 'g':case ',':act(()=>{pickupHere(true);endTurn(100);});break;
-  case 't':{const th=P.inv.filter(o=>['pebbles'].includes(IT[o.k].cat)||['dogtreats','firecrackers'].includes(o.k));if(!th.length){msg('You have nothing to throw.');updateUI();}else if(th.length===1){useItem(th[0]);}else openInv({mode:'select',title:'Throw what?',filter:o=>th.includes(o),onPick:useItem});break;}
+  case 't':{const th=P.inv.filter(o=>['pebbles','drink'].includes(IT[o.k].cat)||['dogtreats','firecrackers'].includes(o.k));const go=o=>IT[o.k].cat==='drink'?throwDrink(o):useItem(o);
+   if(!th.length){msg('You have nothing to throw.');updateUI();}else if(th.length===1){go(th[0]);}else openInv({mode:'select',title:'Throw what?',filter:o=>th.includes(o),onPick:go});break;}
+  case 'f':act(toggleHerd);break;
+  case '-':setZoom(view.zoom-.1);break;
+  case '=':case '+':setZoom(view.zoom+.1);break;
+  case 'm':toggleSound();break;
   case '?':$('#help').hidden=false;break;
   case 'Escape':hoverCell=null;updateHover();render();break;
  }
 });
+function toggleHerd(){
+ G.herdStay=!G.herdStay;const n=L.mons.filter(m=>m.state==='herd').length;
+ msg(G.herdStay?`You tell your herd to stay here.${n?'':' (You don’t have one yet.)'} They won’t follow you, and they only count toward your net worth while you’re with them.`:'You whistle. Your herd follows you again.');
+}
+function toggleSound(){SND.on=!SND.on;try{localStorage.setItem('rizq-sound',SND.on?'on':'off');}catch(e){}const b=$('#sndBtn');b.textContent=SND.on?'Sound on':'Sound off';b.setAttribute('aria-pressed',String(SND.on));if(SND.on)sfx('coin');}
+$('#sndBtn').onclick=toggleSound;
 function cellFromEvent(e){const r=cv.getBoundingClientRect();const x=Math.floor((e.clientX-r.left)/view.cw)+view.camX,y=Math.floor((e.clientY-r.top)/view.ch)+view.camY;return inb(x,y)?[x,y]:null;}
-cv.addEventListener('mousemove',e=>{const c=cellFromEvent(e);if(!c||!G)return;if(targ){targ.x=c[0];targ.y=c[1];}if(!hoverCell||c[0]!==hoverCell[0]||c[1]!==hoverCell[1]){hoverCell=c;updateHover();render();}});
-cv.addEventListener('mouseleave',()=>{hoverCell=null;if(G){updateHover();render();}});
-cv.addEventListener('click',e=>{
- const c=cellFromEvent(e);if(!c||!G||G.over)return;
+function tapCell(c){
+ if(!c||!G||G.over)return;
  if(targ){confirmTarget(c[0],c[1]);return;}
  if(auto){stopAuto();return;}
  const[x,y]=c;
- const isTouch=e.pointerType==='touch'||(window.matchMedia&&matchMedia('(pointer:coarse)').matches);
- if(isTouch&&(!hoverCell||hoverCell[0]!==x||hoverCell[1]!==y)&&!(cheb(x,y,P.x,P.y)===1)){hoverCell=c;updateHover();render();return;}
  if(x===P.x&&y===P.y){act(()=>{if(L.items.some(o=>o.x===x&&o.y===y)){pickupHere(true);endTurn(100);}else rest();});return;}
- if(cheb(x,y,P.x,P.y)===1){act(()=>playerMove(x-P.x,y-P.y));return;}
+ if(cheb(x,y,P.x,P.y)===1){hoverCell=null;act(()=>playerMove(x-P.x,y-P.y));return;}
  if(!L.known[idx(x,y)]){msg('You don’t know how to get there yet.');updateUI();return;}
  hoverCell=null;act(()=>startAuto('travel',[x,y]));
-});
+}
+cv.addEventListener('mousemove',e=>{if(e.pointerType==='touch')return;const c=cellFromEvent(e);if(!c||!G)return;if(targ){targ.x=c[0];targ.y=c[1];}if(!hoverCell||c[0]!==hoverCell[0]||c[1]!==hoverCell[1]){hoverCell=c;updateHover();render();}});
+cv.addEventListener('mouseleave',()=>{hoverCell=null;if(G){updateHover();render();}});
+// Touch: tap to walk or attack, swipe to step, press and hold to inspect.
+let touch=null,lastTouch=0;
+cv.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||!G)return;
+ touch={x:e.clientX,y:e.clientY,c:cellFromEvent(e),held:false};
+ touch.timer=setTimeout(()=>{if(touch){touch.held=true;hoverCell=touch.c;updateHover();render();}},450);});
+cv.addEventListener('pointerup',e=>{if(e.pointerType!=='touch'||!touch)return;lastTouch=Date.now();clearTimeout(touch.timer);
+ const t=touch;touch=null;if(t.held)return;
+ const dx=e.clientX-t.x,dy=e.clientY-t.y,dist=Math.hypot(dx,dy);
+ if(dist>28&&!targ){const a=Math.round(Math.atan2(dy,dx)/(Math.PI/4));const dirs={0:[1,0],1:[1,1],2:[0,1],3:[-1,1],4:[-1,0],'-4':[-1,0],'-3':[-1,-1],'-2':[0,-1],'-1':[1,-1]};
+  const d=dirs[a];if(d){if(auto){stopAuto();return;}hoverCell=null;act(()=>playerMove(d[0],d[1]));}return;}
+ tapCell(t.c);});
+cv.addEventListener('pointercancel',()=>{if(touch)clearTimeout(touch.timer);touch=null;});
+cv.addEventListener('click',e=>{if(Date.now()-lastTouch<700)return;tapCell(cellFromEvent(e));});
 document.querySelectorAll('#pad [data-d]').forEach(b=>b.addEventListener('click',()=>{if(targ){const[dx,dy]=b.dataset.d.split(',').map(Number);targ.x=clamp(targ.x+dx,0,W-1);targ.y=clamp(targ.y+dy,0,H-1);render();return;}if(auto){stopAuto();return;}const[dx,dy]=b.dataset.d.split(',').map(Number);hoverCell=null;act(()=>playerMove(dx,dy));}));
 document.querySelectorAll('#pad [data-a]').forEach(b=>b.addEventListener('click',()=>{
  if(auto){stopAuto();return;}
@@ -1532,6 +1810,9 @@ document.querySelectorAll('#pad [data-a]').forEach(b=>b.addEventListener('click'
  else if(a==='up')act(()=>travelStairs(-1));
  else if(a==='bag')openInv();
  else if(a==='rest')act(()=>startAuto('rest'));
+ else if(a==='herd')act(toggleHerd);
+ else if(a==='zoomin')setZoom(view.zoom+.1);
+ else if(a==='zoomout')setZoom(view.zoom-.1);
  else if(a==='help')$('#help').hidden=false;
 }));
 $('#bannerCancel').onclick=()=>{if(targ)confirmTargetCancel();};
@@ -1539,19 +1820,27 @@ function confirmTargetCancel(){endTarget();}
 $('#invClose').onclick=closeInv;
 $('#helpClose').onclick=()=>{$('#help').hidden=true;};
 $('#btnHelp').onclick=()=>{$('#help').hidden=false;};
-$('#endNew').onclick=()=>{$('#end').hidden=true;$('#title').hidden=false;$('#btnCont').hidden=!hasSave();};
+$('#endNew').onclick=()=>{$('#end').hidden=true;$('#title').hidden=false;$('#btnCont').hidden=!hasSave();showDailyBest();};
 function startNew(){
  const sv=$('#seedIn').value.trim();const seed=sv&&/^\d+$/.test(sv)?(+sv>>>0):(Math.random()*4294967295)>>>0;
  $('#title').hidden=true;$('#end').hidden=true;newGame(seed);resize();save();
 }
+// Daily run: the seed comes from today's date, so everyone gets the same map.
+function todayKey(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function dailySeed(key){let h=2166136261;for(const ch of key){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
+function dailyBest(key){try{return+localStorage.getItem('rizq-daily-'+key)||0;}catch(e){return 0;}}
+function showDailyBest(){const k=todayKey(),b=dailyBest(k);$('#dailyTxt').textContent=`Daily run (${k}): everyone gets the same map today.${b?` Your best today: ${fmt(b)} KD.`:''}`;}
+function startDaily(){const k=todayKey();$('#title').hidden=true;$('#end').hidden=true;newGame(dailySeed(k),k);resize();save();msg(`Daily run for ${k}. Everyone playing today gets this same map.`,'gold');updateUI();}
 $('#btnNew').onclick=startNew;
+$('#btnDaily').onclick=startDaily;
 $('#btnCont').onclick=()=>{try{deserialize(localStorage.getItem('rizq-save'));$('#title').hidden=true;afterTurn(true);resize();msg('Welcome back. The hustle continues.');updateUI();}catch(e){$('#btnCont').hidden=true;}};
 window.addEventListener('resize',resize);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
 
 // ================= BOOT =================
 function boot(data){
- $('#btnCont').hidden=!hasSave();
+ $('#btnCont').hidden=!hasSave();showDailyBest();
+ $('#sndBtn').textContent=SND.on?'Sound on':'Sound off';$('#sndBtn').setAttribute('aria-pressed',String(SND.on));
  if(data&&data.save){try{deserialize(data.save);$('#title').hidden=true;afterTurn(true);resize();return;}catch(e){}}
  resize();
 }
