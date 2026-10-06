@@ -37,9 +37,10 @@ test('title screen, new run and auto-explore work on desktop', async ({ page }) 
   await page.locator('#btnNew').click();
   await expect(page.locator('#title')).toBeHidden();
   await page.keyboard.press('x');
-  await page.waitForTimeout(1500);
-  const turn = await page.evaluate(() => G.turn);
-  expect(turn).toBeGreaterThan(0);
+  await page.waitForFunction(() => G.turn > 0);
+  // Any key stops auto-explore instead of acting, so stop it and wait before pressing i.
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => auto === null);
   await page.keyboard.press('i');
   await expect(page.locator('#inv')).toBeVisible();
   await page.keyboard.press('Escape');
@@ -56,7 +57,7 @@ test('phone layout: touch pad shows and the page never scrolls sideways', async 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);
   await page.locator('#pad [data-a="explore"]').tap();
-  await page.waitForTimeout(1000);
+  await page.waitForFunction(() => G.turn > 0);
   expect(errors).toEqual([]);
   await context.close();
 });
