@@ -132,7 +132,7 @@ npx playwright install chromium
 npm test
 ```
 
-You can also open [`tests.html`](https://rizq.sala.company/tests.html) in a browser:
+You can also open `tests.html` from a local copy of the repo in a browser (it is not published on the live site):
 
 - **Run checks** generates all 26 depths for several seeds and verifies that every level is fully connected, with no staircase cutting off part of a map and a trader on every hub depth. It also exercises taming with dates, the trader (buying, selling at the right rates, the three-animal limit, banking, ma'amoul, the delayed truck and losing it if you leave), the herd's stay/follow rule, save/load, and loading old saves.
 - **Run balance** lets a bot play full games without cheats and reports how deep it got, its net worth and what ended the run. Use it after changing numbers. As of this version a simple bot reaches depths 20–22 with about 90,000–100,000 KD. Reaching 100,000 plus the truck fee takes careful play.
