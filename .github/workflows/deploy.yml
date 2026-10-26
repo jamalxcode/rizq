@@ -48,7 +48,7 @@ jobs:
       - name: Collect the site files
         run: |
           mkdir -p _site
-          cp -r index.html check.html tests.html CNAME app _site/
+          cp -r index.html check.html CNAME app _site/   # tests.html (the eval-based test runner) stays out of the live site
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
